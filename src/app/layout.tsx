@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Rethink_Sans } from "next/font/google";
+import QueryProvider from "@/utils/QueryProvider";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/utils/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const rethink = Rethink_Sans({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -23,12 +21,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <QueryProvider>
+      <html lang="en">
+        <body
+          className={`${rethink.className} antialiased`}
+          suppressHydrationWarning
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
+      <Toaster visibleToasts={1} richColors={true} position="top-right" />
+    </QueryProvider>
   );
 }

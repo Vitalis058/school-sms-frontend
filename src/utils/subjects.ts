@@ -1,0 +1,17 @@
+export const subjects = [
+  { id: "mathematics", label: "Mathematics" },
+  { id: "english", label: "English" },
+  { id: "science", label: "Science" },
+  { id: "physics", label: "Physics" },
+  { id: "chemistry", label: "Chemistry" },
+  { id: "biology", label: "Biology" },
+  { id: "history", label: "History" },
+  { id: "geography", label: "Geography" },
+  { id: "computer_science", label: "Computer Science" },
+  { id: "physical_education", label: "Physical Education" },
+  { id: "art", label: "Art" },
+  { id: "music", label: "Music" },
+  { id: "foreign_language", label: "Foreign Language" },
+  { id: "social_studies", label: "Social Studies" },
+  { id: "economics", label: "Economics" },
+] as const;
