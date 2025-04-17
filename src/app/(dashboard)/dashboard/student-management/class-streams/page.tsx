@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getGradesData } from "@/api_requests/grades_requests";
 import { getTeachers } from "@/api_requests/teachers_requests";
 import StreamPage from "@/components/streams/StreamsPage";
