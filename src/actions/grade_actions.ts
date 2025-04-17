@@ -2,6 +2,7 @@
 "use server";
 import { API_URL } from "@/constants/apiUrl";
 import { GradeCreationSchema } from "@/utils/validation";
+import { revalidatePath } from "next/cache";
 
 type PrevStateTypes = {
   message?: string;
@@ -42,6 +43,8 @@ export async function createGradeAction(
         },
       };
     }
+
+    revalidatePath("/dashboard/student-management");
 
     return {
       message: "Grade created successfully",

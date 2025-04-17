@@ -3,7 +3,9 @@ import { API_URL } from "@/constants/apiUrl";
 
 export async function getParents() {
   try {
-    const response = await fetch(`${API_URL}/api/v1/parents`);
+    const response = await fetch(`${API_URL}/api/v1/parents`, {
+      next: { revalidate: 0 },
+    });
     const data = await response.json();
 
     if (!response.ok) {
