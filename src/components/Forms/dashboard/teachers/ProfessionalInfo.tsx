@@ -19,32 +19,20 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useFormContext } from "react-hook-form";
+import { SubjectType } from "@/types/types";
+import { TeacherEnrollmentType } from "@/utils/validation";
 
-const subjects = [
-  { id: "mathematics", label: "Mathematics" },
-  { id: "english", label: "English" },
-  { id: "science", label: "Science" },
-  { id: "physics", label: "Physics" },
-  { id: "chemistry", label: "Chemistry" },
-  { id: "biology", label: "Biology" },
-  { id: "history", label: "History" },
-  { id: "geography", label: "Geography" },
-  { id: "computer_science", label: "Computer Science" },
-  { id: "physical_education", label: "Physical Education" },
-  { id: "art", label: "Art" },
-  { id: "music", label: "Music" },
-  { id: "foreign_language", label: "Foreign Language" },
-  { id: "social_studies", label: "Social Studies" },
-  { id: "economics", label: "Economics" },
-] as const;
+interface ProfessionalInfoProps {
+  subjects: SubjectType[];
+}
 
-function ProfessionalInfo() {
-  const { control } = useFormContext();
+function ProfessionalInfo({ subjects }: ProfessionalInfoProps) {
+  const { control } = useFormContext<TeacherEnrollmentType>();
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold mb-4">Educational Qualifications</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <h3 className="mb-4 text-lg font-semibold">Educational Qualifications</h3>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField
           control={control}
           name="highestQualification"
@@ -115,11 +103,11 @@ function ProfessionalInfo() {
 
       <Separator className="my-6" />
 
-      <h3 className="text-lg font-semibold mb-4">Teaching Preferences</h3>
+      <h3 className="mb-4 text-lg font-semibold">Teaching Preferences</h3>
       <div className="space-y-6">
         <FormField
           control={control}
-          name="subjectsCanTeach"
+          name="subjects"
           render={() => (
             <FormItem>
               <div className="mb-4">
@@ -128,17 +116,17 @@ function ProfessionalInfo() {
                   Select all subjects that the teacher is qualified to teach
                 </FormDescription>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
                 {subjects.map((subject) => (
                   <FormField
                     key={subject.id}
                     control={control}
-                    name="subjectsCanTeach"
+                    name="subjects"
                     render={({ field }) => {
                       return (
                         <FormItem
                           key={subject.id}
-                          className="flex flex-row items-start space-x-3 space-y-0"
+                          className="flex flex-row items-start space-y-0 space-x-3"
                         >
                           <FormControl>
                             <Checkbox
@@ -148,14 +136,14 @@ function ProfessionalInfo() {
                                   ? field.onChange([...field.value, subject.id])
                                   : field.onChange(
                                       field.value?.filter(
-                                        (value: string) => value !== subject.id
-                                      )
+                                        (value: string) => value !== subject.id,
+                                      ),
                                     );
                               }}
                             />
                           </FormControl>
                           <FormLabel className="font-normal">
-                            {subject.label}
+                            {subject.name}
                           </FormLabel>
                         </FormItem>
                       );
@@ -179,7 +167,7 @@ function ProfessionalInfo() {
                   Select all grades that the teacher can teach
                 </FormDescription>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((grade) => (
                   <FormField
                     key={grade}
@@ -189,7 +177,7 @@ function ProfessionalInfo() {
                       return (
                         <FormItem
                           key={grade}
-                          className="flex flex-row items-start space-x-3 space-y-0"
+                          className="flex flex-row items-start space-y-0 space-x-3"
                         >
                           <FormControl>
                             <Checkbox
@@ -203,8 +191,8 @@ function ProfessionalInfo() {
                                   : field.onChange(
                                       field.value?.filter(
                                         (value: string) =>
-                                          value !== grade.toString()
-                                      )
+                                          value !== grade.toString(),
+                                      ),
                                     );
                               }}
                             />

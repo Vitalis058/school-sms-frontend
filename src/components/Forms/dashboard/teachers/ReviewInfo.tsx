@@ -1,4 +1,4 @@
-import { subjects } from "@/utils/subjects";
+import { DepartmentType, SubjectType } from "@/types/types";
 import { TeacherEnrollmentType } from "@/utils/validation";
 import { format } from "date-fns";
 import React from "react";
@@ -6,18 +6,20 @@ import { UseFormReturn } from "react-hook-form";
 
 type ReviewInfoTypes = {
   form: UseFormReturn<TeacherEnrollmentType>;
+  subjects: SubjectType[];
+  departments: DepartmentType[];
 };
 
-function ReviewInfo({ form }: ReviewInfoTypes) {
+function ReviewInfo({ form, subjects, departments }: ReviewInfoTypes) {
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold mb-4">Review Your Information</h3>
+      <h3 className="mb-4 text-lg font-semibold">Review Your Information</h3>
       <div className="space-y-6">
-        <div className="border rounded-md p-4">
-          <h4 className="font-medium mb-2 text-primary">
+        <div className="rounded-md border p-4">
+          <h4 className="text-primary mb-2 font-medium">
             Personal Information
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
             <div>
               <span className="font-medium">Name:</span>{" "}
               {form.getValues("firstName")} {form.getValues("lastName")}
@@ -50,11 +52,11 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
           </div>
         </div>
 
-        <div className="border rounded-md p-4">
-          <h4 className="font-medium mb-2 text-primary">
+        <div className="rounded-md border p-4">
+          <h4 className="text-primary mb-2 font-medium">
             Address & Emergency Contact
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
             <div className="col-span-2">
               <span className="font-medium">Address:</span>{" "}
               {form.getValues("address")}, {form.getValues("city")},{" "}
@@ -75,11 +77,11 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
           </div>
         </div>
 
-        <div className="border rounded-md p-4">
-          <h4 className="font-medium mb-2 text-primary">
+        <div className="rounded-md border p-4">
+          <h4 className="text-primary mb-2 font-medium">
             Professional Information
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+          <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
             <div>
               <span className="font-medium">Qualification:</span>{" "}
               {form.getValues("highestQualification")}
@@ -95,8 +97,8 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
             <div className="col-span-2">
               <span className="font-medium">Subjects:</span>{" "}
               {form
-                .getValues("subjectsCanTeach")
-                .map((id) => subjects.find((s) => s.id === id)?.label)
+                .getValues("subjects")
+                .map((id) => subjects.find((s) => s.id === id)?.name)
                 .join(", ")}
             </div>
             <div className="col-span-2">
@@ -109,9 +111,9 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
           </div>
         </div>
 
-        <div className="border rounded-md p-4">
-          <h4 className="font-medium mb-2 text-primary">Employment Details</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+        <div className="rounded-md border p-4">
+          <h4 className="text-primary mb-2 font-medium">Employment Details</h4>
+          <div className="grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
             <div>
               <span className="font-medium">Position:</span>{" "}
               {form
@@ -122,7 +124,9 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
             </div>
             <div>
               <span className="font-medium">Department:</span>{" "}
-              {form.getValues("department")}
+              {departments.find(
+                (department) => department.id === form.getValues("department"),
+              )?.name || "Not provided"}
             </div>
             <div>
               <span className="font-medium">Employment Type:</span>{" "}
@@ -141,7 +145,7 @@ function ReviewInfo({ form }: ReviewInfoTypes) {
           </div>
         </div>
 
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Please review all information carefully before submitting. You can go
           back to previous steps to make any corrections.
         </p>

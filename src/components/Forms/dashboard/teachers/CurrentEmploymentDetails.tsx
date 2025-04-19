@@ -25,8 +25,13 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useFormContext } from "react-hook-form";
+import { DepartmentType } from "@/types/types";
 
-function CurrentEmploymentDetails() {
+interface CurrentEmploymentProps {
+  departments: DepartmentType[];
+}
+
+function CurrentEmploymentDetails({ departments }: CurrentEmploymentProps) {
   const { control } = useFormContext();
 
   return (
@@ -144,22 +149,11 @@ function CurrentEmploymentDetails() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="mathematics">Mathematics</SelectItem>
-                  <SelectItem value="science">Science</SelectItem>
-                  <SelectItem value="languages">Languages</SelectItem>
-                  <SelectItem value="social_studies">Social Studies</SelectItem>
-                  <SelectItem value="arts">Arts</SelectItem>
-                  <SelectItem value="physical_education">
-                    Physical Education
-                  </SelectItem>
-                  <SelectItem value="computer_science">
-                    Computer Science
-                  </SelectItem>
-                  <SelectItem value="special_education">
-                    Special Education
-                  </SelectItem>
-                  <SelectItem value="administration">Administration</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {departments.map((department) => (
+                    <SelectItem key={department.id} value={department.id}>
+                      {department.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
