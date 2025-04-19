@@ -87,7 +87,7 @@ export const TeacherEnrollmentSchema = z.object({
         required_error: "End date is required",
       }),
       reasonForLeaving: z.string().min(1, "reason for leaving is required"),
-    })
+    }),
   ),
 
   // Additional Information
@@ -130,3 +130,32 @@ export const ParentsEnrollmentSchema = z.object({
 });
 
 export type ParentsEnrollmentType = z.infer<typeof ParentsEnrollmentSchema>;
+
+//department creation schema
+export const DepartmentCreationSchema = z.object({
+  name: z.string().min(1, { message: "Department name is required" }),
+  description: z.string().optional(),
+});
+
+export type DepartmentTypes = z.infer<typeof DepartmentCreationSchema>;
+
+// subject creation schema
+export const subjectSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  shortname: z.string().min(1, "Short Name is required"),
+  subjectCode: z.string().min(1, "Subject Code is required"),
+  departmentId: z.string().min(1, "Department is required"),
+
+  active: z
+    .union([z.literal("on"), z.null(), z.undefined()])
+    .transform((val) => val === "on"),
+  optional: z
+    .union([z.literal("on"), z.null(), z.undefined()])
+    .transform((val) => val === "on"),
+  fieldtrips: z
+    .union([z.literal("on"), z.null(), z.undefined()])
+    .transform((val) => val === "on"),
+  labRequired: z
+    .union([z.literal("on"), z.null(), z.undefined()])
+    .transform((val) => val === "on"),
+});

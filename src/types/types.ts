@@ -85,3 +85,19 @@ export type StudentType = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type SubjectType = {
+  id: string;
+  name: string;
+  slug: string;
+  subjectCode: string;
+};
+
+export type DepartmentType = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -31,8 +31,8 @@ function CurrentEmploymentDetails() {
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-semibold mb-4">Current Employment Details</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <h3 className="mb-4 text-lg font-semibold">Current Employment Details</h3>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <FormField
           control={control}
           name="employmentType"
@@ -69,7 +69,7 @@ function CurrentEmploymentDetails() {
                       variant={"outline"}
                       className={cn(
                         "w-full pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       {field.value ? (

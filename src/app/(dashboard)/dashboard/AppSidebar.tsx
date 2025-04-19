@@ -17,6 +17,7 @@ import {
   PieChart,
   Settings,
   Sparkles,
+  UserPen,
   Users,
 } from "lucide-react";
 import {
@@ -93,10 +94,34 @@ const data = {
       icon: BookOpenCheck,
       items: [
         { title: "Curriculum", url: "/dashboard/academics/curriculum" },
+        { title: "Subjects", url: "/dashboard/academics/subjects" },
         { title: "Timetable", url: "/dashboard/academics/timetable" },
-        { title: "Examinations", url: "/dashboard/academics/examinations" },
         { title: "Assignments", url: "/dashboard/academics/assignments" },
+        { title: "Examinations", url: "/dashboard/academics/examinations" },
         { title: "Report Cards", url: "/dashboard/academics/report-cards" },
+      ],
+    },
+
+    {
+      title: "Staff Management",
+      url: "/dashboard/staff-management",
+      icon: UserPen,
+      items: [
+        { title: "All Staff", url: "/dashboard/staff-management/all-staff" },
+        {
+          title: "Departments",
+          url: "/dashboard/staff-management/departments",
+        },
+        {
+          title: "Roles & Permissions",
+          url: "/dashboard/staff-management/roles-permissions",
+        },
+        { title: "Attendance", url: "/dashboard/staff-management/attendance" },
+        {
+          title: "Leave Requests",
+          url: "/dashboard/staff-management/leave-requests",
+        },
+        { title: "Payroll", url: "/dashboard/staff-management/payroll" },
       ],
     },
     {
