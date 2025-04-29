@@ -4,6 +4,7 @@ import { Rethink_Sans } from "next/font/google";
 import QueryProvider from "@/utils/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/utils/ThemeProvider";
+import { ReduxProvider } from "@/utils/ReduxProvider";
 
 const rethink = Rethink_Sans({
   subsets: ["latin"],
@@ -22,22 +23,24 @@ export default function RootLayout({
 }>) {
   return (
     <QueryProvider>
-      <html lang="en">
-        <body
-          className={`${rethink.className} antialiased`}
-          suppressHydrationWarning
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
+      <ReduxProvider>
+        <html lang="en">
+          <body
+            className={`${rethink.className} antialiased`}
+            suppressHydrationWarning
           >
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-      <Toaster visibleToasts={1} richColors={true} position="top-right" />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </body>
+        </html>
+        <Toaster visibleToasts={1} richColors={true} position="top-right" />
+      </ReduxProvider>
     </QueryProvider>
   );
 }
