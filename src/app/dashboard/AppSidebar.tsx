@@ -95,7 +95,7 @@ const data = {
       items: [
         { title: "Curriculum", url: "/dashboard/academics/curriculum" },
         { title: "Subjects", url: "/dashboard/academics/subjects" },
-        { title: "Timetable", url: "/dashboard/academics/timetable" },
+        { title: "Lessons", url: "/dashboard/academics/lessons" },
         { title: "Assignments", url: "/dashboard/academics/assignments" },
         { title: "Examinations", url: "/dashboard/academics/examinations" },
         { title: "Report Cards", url: "/dashboard/academics/report-cards" },

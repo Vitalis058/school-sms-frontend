@@ -1,7 +1,6 @@
 import { DepartmentType, SubjectType } from "@/types/types";
 import { TeacherEnrollmentType } from "@/utils/validation";
 import { format } from "date-fns";
-import React from "react";
 import { UseFormReturn } from "react-hook-form";
 
 type ReviewInfoTypes = {
@@ -125,7 +124,8 @@ function ReviewInfo({ form, subjects, departments }: ReviewInfoTypes) {
             <div>
               <span className="font-medium">Department:</span>{" "}
               {departments.find(
-                (department) => department.id === form.getValues("department"),
+                (department) =>
+                  department.id === form.getValues("departmentId"),
               )?.name || "Not provided"}
             </div>
             <div>

@@ -30,6 +30,7 @@ export type TeacherType = {
   additionalNotes: string;
   createdAt: string;
   updatedAt: string;
+  Department: DepartmentType;
 };
 
 export type StreamsType = {
@@ -100,4 +101,15 @@ export type DepartmentType = {
   description: string | null;
   createdAt: string;
   updatedAt: string;
+  _count: {
+    teachers: number;
+    subjects: number;
+  };
+};
+
+export type TimeSlotType = {
+  id: string;
+  name: string;
+  startTime: string;
+  endTime: string;
 };

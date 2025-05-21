@@ -1,11 +1,12 @@
 "use client";
 import { configureStore } from "@reduxjs/toolkit";
-import teacherSlice from "./../features/teacher/slice";
+import departmentSlice from "./../features/department/slice";
 import gradeSlice from "./../features/grade/slice";
+import timeSlotSlice from "./../features/lessons/slice";
+import parentSlice from "./../features/parent/slice";
 import streamSlice from "./../features/stream/slice";
 import subjectSlice from "./../features/subject/slice";
-import departmentSlice from "./../features/department/slice";
-import parentSlice from "./../features/parent/slice";
+import teacherSlice from "./../features/teacher/slice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     streams: streamSlice,
     department: departmentSlice,
     parents: parentSlice,
+    timeSlots: timeSlotSlice,
   },
 });
 

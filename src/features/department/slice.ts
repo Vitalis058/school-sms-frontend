@@ -1,6 +1,6 @@
+import { DepartmentType } from "@/types/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getDepartments } from "./api/department_requests";
-import { DepartmentType } from "@/types/types";
 
 interface DepartmentsState {
   departments: DepartmentType[];
@@ -30,7 +30,11 @@ const departmentsSlice = createSlice({
   initialState,
   reducers: {
     // you can add non-async reducers here if needed
+    createDepartmentAction(state, action) {
+      state.departments = [...state.departments, action.payload];
+    },
   },
+
   extraReducers(builder) {
     builder
       .addCase(fetchDepartments.pending, (state) => {
@@ -45,5 +49,7 @@ const departmentsSlice = createSlice({
       });
   },
 });
+
+export const { createDepartmentAction } = departmentsSlice.actions;
 
 export default departmentsSlice.reducer;

@@ -4,14 +4,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 const columnHelper = createColumnHelper<StudentType>();
 
 export const studentColumns = [
-  columnHelper.accessor("firstName", {
-    header: "First Name",
-    cell: (info) => info.getValue(),
+  columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
+    id: "full_name",
+    header: "Full name",
   }),
-  columnHelper.accessor("lastName", {
-    header: "Last Name",
-    cell: (info) => info.getValue(),
-  }),
+
   columnHelper.accessor("admissionNumber", {
     header: "Admission No",
     cell: (info) => info.getValue(),

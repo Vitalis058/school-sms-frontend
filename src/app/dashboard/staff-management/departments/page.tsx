@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
-import { DepartmentType } from "@/types/types";
 import DepartmentCard from "@/features/department/components/DepartmentCard";
 import DepartmentDetails from "@/features/department/components/DepartmentDetails";
 import { useAppSelector } from "@/store/hooks";
+import { DepartmentType } from "@/types/types";
+import { useState } from "react";
 
 function DepartmentsPage() {
   const { departments } = useAppSelector((state) => state.department);
+
+  console.log(departments);
 
   const [selectedDepartment, setSelectedDepartment] = useState<
     DepartmentType | undefined
@@ -22,7 +24,7 @@ function DepartmentsPage() {
       />
 
       <div className="flex-1">
-        <DepartmentDetails />
+        <DepartmentDetails department={selectedDepartment} />
       </div>
     </div>
   );

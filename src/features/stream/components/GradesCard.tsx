@@ -92,7 +92,7 @@ function GradesCard({
               </DialogDescription>
             </DialogHeader>
             {gradeState.message && (
-              <p className="text-sm text-green-500">{gradeState.message}</p>
+              <p className="text-sm text-green-500">{gradeState?.message}</p>
             )}
             {gradeState.errors?.error && (
               <p className="text-sm text-red-500">

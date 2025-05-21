@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -18,26 +16,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import LoadingButton from "@/components/LoadingButton";
 import { Progress } from "@/components/ui/progress";
+import { API_URL } from "@/constants/apiUrl";
+import AdditionalInfo from "@/features/teacher/forms/AdditionalInfo";
+import AddressInfo from "@/features/teacher/forms/AddressInfo";
+import CurrentEmploymentDetails from "@/features/teacher/forms/CurrentEmploymentDetails";
+import PersonalInfo from "@/features/teacher/forms/personalInfo";
+import PreviousEmployment from "@/features/teacher/forms/PreviousEmployment";
+import ProfessionalInfo from "@/features/teacher/forms/ProfessionalInfo";
+import ReviewInfo from "@/features/teacher/forms/ReviewInfo";
+import { useAppSelector } from "@/store/hooks";
 import {
   TeacherEnrollmentSchema,
   TeacherEnrollmentType,
 } from "@/utils/validation";
-import PreviousEmployment from "@/features/teacher/forms/PreviousEmployment";
-import LoadingButton from "@/components/LoadingButton";
-import PersonalInfo from "@/features/teacher/forms/personalInfo";
-import AddressInfo from "@/features/teacher/forms/AddressInfo";
-import ProfessionalInfo from "@/features/teacher/forms/ProfessionalInfo";
-import CurrentEmploymentDetails from "@/features/teacher/forms/CurrentEmploymentDetails";
-import AdditionalInfo from "@/features/teacher/forms/AdditionalInfo";
-import ReviewInfo from "@/features/teacher/forms/ReviewInfo";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { API_URL } from "@/constants/apiUrl";
-import { toast } from "sonner";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/store/hooks";
+import { toast } from "sonner";
 
 // Define the steps of the form
 const steps = [
@@ -79,7 +77,7 @@ export default function TeacherEnrollmentForm() {
       gradesCanTeach: [],
       employmentType: "full_time",
       position: "",
-      department: "",
+      departmentId: "",
       previousEmployments: [
         {
           institution: "",

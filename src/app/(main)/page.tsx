@@ -4,11 +4,10 @@ import FeatureGrid from "@/components/pages/HomePage/FeatureGrid";
 import Hero from "@/components/pages/HomePage/Hero";
 import Trusted from "@/components/pages/HomePage/Trusted";
 import WhyChooseUs from "@/components/pages/HomePage/WhyChooseUs";
-import React from "react";
 
 function Home() {
   return (
-    <div>
+    <div className="space-y-16">
       <Hero />
       <Trusted />
       <About />

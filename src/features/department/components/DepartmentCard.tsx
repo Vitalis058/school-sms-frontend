@@ -1,12 +1,8 @@
 "use client";
 
-import { GraduationCapIcon, Pen, Plus, Trash2Icon } from "lucide-react";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useActionState,
-  useState,
-} from "react";
+import LoadingButton from "@/components/LoadingButton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,31 +11,38 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import LoadingButton from "@/components/LoadingButton";
-import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAppDispatch } from "@/store/hooks";
 import { DepartmentType } from "@/types/types";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import { Pen, Plus, School, Trash2Icon } from "lucide-react";
+import {
+  Dispatch,
+  SetStateAction,
+  useActionState,
+  useEffect,
+  useState,
+} from "react";
 import { createDepartment } from "../actions/department_actions";
+import { createDepartmentAction } from "../slice";
 
 const initialState = {
   message: undefined,
   errors: {},
+  newDepartment: undefined,
+  success: false,
 };
 
 type DepartmentCardTypes = {
   setSelectedDepartment: Dispatch<SetStateAction<DepartmentType | undefined>>;
-
   departments?: DepartmentType[];
-
   selectedDepartment?: DepartmentType;
 };
 
@@ -49,17 +52,23 @@ function DepartmentCard({
   selectedDepartment,
 }: DepartmentCardTypes) {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
-
-  //creating the department
   const [departmentState, departmentFormAction, departmentIsPending] =
     useActionState(createDepartment, initialState);
+
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (departmentState.success && departmentState.newDepartment) {
+      dispatch(createDepartmentAction(departmentState.newDepartment));
+    }
+  }, [departmentState.success, departmentState.newDepartment, dispatch]);
 
   return (
     <div className="w-full max-w-[300px] flex-1">
       <div className="mb-4 flex items-center justify-between">
-        <span className="flex items-center gap-2">
-          <GraduationCapIcon className="h-6 w-6 text-slate-700" />
-          <p className="text-lg font-semibold">Classes</p>
+        <span className="flex justify-center gap-2">
+          <School className="h-6 w-6 text-gray-500" />
+          <p className="font-semibold">Departments</p>
         </span>
 
         {/* Add Class Dialog */}
@@ -67,17 +76,24 @@ function DepartmentCard({
           open={isDepartmentModalOpen}
           onOpenChange={setIsDepartmentModalOpen}
         >
-          <DialogTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Plus className="h-5 w-5" />
-              <span className="sr-only">Add new class</span>
-            </Button>
-          </DialogTrigger>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Plus className="h-5 w-5" />
+                    <span className="sr-only">Add new department</span>
+                  </Button>
+                </DialogTrigger>
+              </TooltipTrigger>
+              <TooltipContent>Add a new department</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Create New Class</DialogTitle>
+              <DialogTitle>Create New Department</DialogTitle>
               <DialogDescription>
-                Enter the details for the new class.
+                Enter the details for the new Department.
               </DialogDescription>
             </DialogHeader>
             {departmentState.message && (
@@ -117,14 +133,14 @@ function DepartmentCard({
               </div>
 
               <LoadingButton className="w-full" loading={departmentIsPending}>
-                Create Class
+                Create department
               </LoadingButton>
             </form>
           </DialogContent>
         </Dialog>
       </div>
       {!departments ? (
-        <p>No class</p>
+        <p>No department</p>
       ) : (
         <div className="space-y-3">
           {departments.map((departmentItem) => (
@@ -161,7 +177,7 @@ function DepartmentCard({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Edit class</p>
+                          <p>Edit department</p>
                         </TooltipContent>
                       </Tooltip>
 
@@ -178,7 +194,7 @@ function DepartmentCard({
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Delete class</p>
+                          <p>Delete department</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>

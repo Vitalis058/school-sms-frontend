@@ -1,6 +1,5 @@
-import React from "react";
-
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   FormControl,
   FormField,
@@ -9,23 +8,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { DepartmentType } from "@/types/types";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { useFormContext } from "react-hook-form";
-import { DepartmentType } from "@/types/types";
 
 interface CurrentEmploymentProps {
   departments: DepartmentType[];
@@ -138,7 +136,7 @@ function CurrentEmploymentDetails({ departments }: CurrentEmploymentProps) {
 
         <FormField
           control={control}
-          name="department"
+          name="departmentId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Department</FormLabel>

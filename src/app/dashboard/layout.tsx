@@ -1,9 +1,5 @@
 "use client";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import type React from "react";
-import { useEffect, useState } from "react";
-import AppSidebar from "./AppSidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,11 +9,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import type React from "react";
+import { useEffect, useState } from "react";
+import AppSidebar from "./AppSidebar";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { Input } from "@/components/ui/input";
+import { ThemeSwitch } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { fetchDepartments } from "@/features/department/slice";
+import { fetchGrades } from "@/features/grade/slice";
+import { fetchTimeSlots } from "@/features/lessons/slice";
+import { fetchParents } from "@/features/parent/slice";
+import { fetchStreams } from "@/features/stream/slice";
+import { fetchSubjects } from "@/features/subject/slice";
+import { fetchTeachers } from "@/features/teacher/slice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   BadgeCheck,
   Bell,
@@ -28,14 +37,6 @@ import {
   Sparkles,
   User,
 } from "lucide-react";
-import { ThemeSwitch } from "@/components/ThemeToggle";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { fetchTeachers } from "@/features/teacher/slice";
-import { fetchGrades } from "@/features/grade/slice";
-import { fetchDepartments } from "@/features/department/slice";
-import { fetchSubjects } from "@/features/subject/slice";
-import { fetchParents } from "@/features/parent/slice";
-import { fetchStreams } from "@/features/stream/slice";
 
 const data = {
   user: {
@@ -56,14 +57,27 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     dispatch(fetchSubjects());
     dispatch(fetchParents());
     dispatch(fetchStreams());
+    dispatch(fetchTimeSlots());
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { status: teachersStatus } = useAppSelector((state) => state.teachers);
-  const { status: gradesStatus } = useAppSelector((state) => state.grades);
+  const { status: departmentsStatus } = useAppSelector(
+    (state) => state.department,
+  );
+  const { status: subjectsStatus } = useAppSelector((state) => state.subjects);
+  const { status: parentsStatus } = useAppSelector((state) => state.parents);
+  const { status: streamsStatus } = useAppSelector((state) => state.streams);
+  const { status: timeSlotsStatus } = useAppSelector(
+    (state) => state.timeSlots,
+  );
 
-  const isLoading = teachersStatus === "pending" || gradesStatus === "pending";
+  const isLoading =
+    departmentsStatus === "pending" ||
+    subjectsStatus === "pending" ||
+    parentsStatus === "pending" ||
+    streamsStatus === "pending" ||
+    timeSlotsStatus === "pending";
 
   if (isLoading) {
     return (
@@ -76,6 +90,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
       <AppSidebar />
+
       <main className="w-full">
         <div className="flex h-16 items-center gap-4 border-b px-4">
           <SidebarTrigger />

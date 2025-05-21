@@ -32,11 +32,15 @@ import React, { useState } from "react";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  dataName: string;
+  link?: string;
 }
 
-function StudentsDataTable<TData, TValue>({
+function DataTable<TData, TValue>({
   columns,
   data,
+  dataName,
+  link,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -66,21 +70,19 @@ function StudentsDataTable<TData, TValue>({
         {/* Global Filter */}
         <div className="flex justify-between p-4">
           <Input
-            placeholder="Search students..."
+            placeholder={`Search ${dataName}...`}
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="focus:border-primary focus:ring-primary max-w-sm"
           />
-
-          <Button>
-            <Link
-              href={"/dashboard/student-management/new"}
-              className="flex items-center gap-2"
-            >
-              New Student
-              <Plus />
-            </Link>
-          </Button>
+          {link && (
+            <Button>
+              <Link href={link} className="flex items-center gap-2">
+                {`New ${dataName}`}
+                <Plus />
+              </Link>
+            </Button>
+          )}
         </div>
 
         {/* Table */}
@@ -144,7 +146,7 @@ function StudentsDataTable<TData, TValue>({
                     colSpan={columns.length}
                     className="h-24 text-center text-gray-500"
                   >
-                    No students found.
+                    No {dataName} found.
                   </TableCell>
                 </TableRow>
               )}
@@ -225,11 +227,11 @@ function StudentsDataTable<TData, TValue>({
 
         {/* Footer */}
         <div className="bg-primary/30 border-t border-gray-100 p-4 text-center text-sm text-gray-600">
-          Showing {table.getRowModel().rows.length} of {data.length} students
+          Showing {table.getRowModel().rows.length} of {data.length} {dataName}
         </div>
       </div>
     </div>
   );
 }
 
-export default StudentsDataTable;
+export default DataTable;

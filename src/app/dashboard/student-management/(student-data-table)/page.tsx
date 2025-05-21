@@ -1,9 +1,9 @@
 "use client";
 
+import DataTable from "@/components/DataTable";
 import { getStudents } from "@/features/student/api/student_requests";
-import { studentColumns } from "./columns";
-import StudentsDataTable from "./StudentDataTable";
 import { useQuery } from "@tanstack/react-query";
+import { studentColumns } from "./columns";
 
 export default function StudentsPage() {
   const response = useQuery({
@@ -21,7 +21,12 @@ export default function StudentsPage() {
   return (
     <div className="p-4">
       <h2 className="mb-4 text-xl font-bold">Students List</h2>
-      <StudentsDataTable columns={studentColumns} data={response.data} />
+      <DataTable
+        columns={studentColumns}
+        data={response.data}
+        dataName="students"
+        link="/dashboard/student-management/new"
+      />
     </div>
   );
 }

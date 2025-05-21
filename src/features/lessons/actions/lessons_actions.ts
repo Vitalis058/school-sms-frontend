@@ -1,33 +1,34 @@
 "use server";
 
 import { API_URL } from "@/constants/apiUrl";
-import { DepartmentType } from "@/types/types";
-import { DepartmentCreationSchema } from "@/utils/validation";
+import { lessonSchema } from "@/utils/validation";
 
 type PrevState = {
   message?: string;
   errors?: Record<string, string[]>;
-  newDepartment?: DepartmentType;
-  success: boolean;
 };
-export async function createDepartment(
+export async function createLessonAction(
   prevState: PrevState,
   formData: FormData,
 ): Promise<PrevState> {
   try {
-    const validatedFields = DepartmentCreationSchema.safeParse({
+    const validatedFields = lessonSchema.safeParse({
       name: formData.get("name"),
+      teacherId: formData.get("teacherId"),
+      streamId: formData.get("streamId"),
+      subjectId: formData.get("subjectId"),
       description: formData.get("description"),
+      timeSlotId: formData.get("timeSlotId"),
+      day: formData.get("day"),
     });
 
     if (!validatedFields.success) {
       return {
         errors: validatedFields.error.flatten().fieldErrors,
-        success: false,
       };
     }
 
-    const response = await fetch(`${API_URL}/api/v1/departments`, {
+    const response = await fetch(`${API_URL}/api/v1/lessons`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",
@@ -39,22 +40,18 @@ export async function createDepartment(
 
     if (!response.ok) {
       return {
-        errors: { error: [data.message || "Error in creating the department"] },
-        success: false,
+        errors: { error: [data.message || "Error in creating the stream"] },
       };
     }
 
     return {
-      message: "Department created",
+      message: "success",
       errors: undefined,
-      newDepartment: data.data,
-      success: true,
     };
   } catch (error) {
-    console.log(error, "creating department");
+    console.log(error, "creating stream");
     return {
       errors: { error: ["internal server error"] },
-      success: false,
     };
   }
 }

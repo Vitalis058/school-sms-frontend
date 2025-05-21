@@ -1,7 +1,5 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -11,25 +9,30 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import Link from "next/link";
 
 import {
-  DollarSign,
+  BarChart2,
   Bell,
-  Users,
+  BookOpen,
+  Bus,
+  CalendarDays,
+  ClipboardList,
+  DollarSign,
+  FileText,
   GraduationCap,
   MessageSquare,
-  ClipboardList,
-  Bus,
-  BarChart2,
-  BookOpen,
-  CalendarDays,
-  FileText,
   Shield,
+  Users,
 } from "lucide-react";
 
+import { useEffect, useState } from "react";
+import { ThemeSwitch } from "../ThemeToggle";
 import Logo from "./Logo";
 import MobileNav from "./MobileNav";
-import { ThemeSwitch } from "../ThemeToggle";
+
+const navLinkClass =
+  "group inline-flex h-9 items-center justify-center rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:text-primary transition-colors dark:text-muted-foreground dark:hover:text-white";
 
 const features = [
   {
@@ -119,24 +122,44 @@ const features = [
 ];
 
 export default function MainNav() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = window.scrollY;
+      setScrolled(offset > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <nav>
-      <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
+    <nav className={`sticky z-50 px-2 ${scrolled ? "top-2" : ""}`}>
+      <header
+        className={`sticky top-0 z-50 mx-auto w-[98%] rounded-full px-5 sm:w-full ${
+          scrolled
+            ? "supports-[backdrop-filter]:bg-foreground/20 backdrop-blur"
+            : ""
+        }`}
+      >
         <div className="container mx-auto flex h-20 max-w-[1300px] items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Logo height={80} width={80} />
+            <Logo height={60} width={60} />
             <NavigationMenu className="hidden md:flex">
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink className="bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                    <NavigationMenuLink className={`${navLinkClass}`}>
                       Home
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger>Features</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className={`${navLinkClass} bg-none`}>
+                    Features
+                  </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-[800px] p-4">
                       <div className="mb-4 flex items-center justify-between border-b pb-2">
@@ -191,7 +214,7 @@ export default function MainNav() {
 
                 <NavigationMenuItem>
                   <Link href="/pricing" legacyBehavior passHref>
-                    <NavigationMenuLink className="bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                    <NavigationMenuLink className={navLinkClass}>
                       Pricing
                     </NavigationMenuLink>
                   </Link>
@@ -199,7 +222,7 @@ export default function MainNav() {
 
                 <NavigationMenuItem>
                   <Link href="/how-it-works" legacyBehavior passHref>
-                    <NavigationMenuLink className="bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 group inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50">
+                    <NavigationMenuLink className={navLinkClass}>
                       How it works
                     </NavigationMenuLink>
                   </Link>
@@ -209,7 +232,7 @@ export default function MainNav() {
           </div>
 
           <div className="hidden items-center space-x-4 md:flex">
-            <Button variant="outline" className="rounded-full border-primary">
+            <Button variant="outline" className="border-primary rounded-full">
               <Link href={"/sign-in"}>Login</Link>
             </Button>
             <ThemeSwitch />

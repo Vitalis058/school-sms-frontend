@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-import { cn } from "@/lib/utils";
 import {
   Sheet,
   SheetClose,
@@ -10,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
 import {
   BarChart2,
   Bell,
@@ -28,7 +26,9 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import React from "react";
 import { ThemeSwitch } from "../ThemeToggle";
+import { Button } from "../ui/button";
 
 const features = [
   {
@@ -148,7 +148,7 @@ function MobileNav() {
             <ChevronDown
               className={cn(
                 "h-5 w-5 transition-transform",
-                showFeatures && "rotate-180"
+                showFeatures && "rotate-180",
               )}
             />
           </button>
@@ -184,6 +184,16 @@ function MobileNav() {
               Pricing
             </Link>
           </SheetClose>
+
+          <SheetClose asChild>
+            <Link
+              href="/dashboard"
+              className="hover:bg-accent px-4 py-2 font-medium"
+            >
+              Dashboard
+            </Link>
+          </SheetClose>
+
           <SheetClose asChild>
             <Link
               href="/how-it-works"
@@ -193,7 +203,7 @@ function MobileNav() {
             </Link>
           </SheetClose>
         </div>
-        <div className="bg-background absolute bottom-0 left-0 right-0 border-t p-4">
+        <div className="bg-background absolute right-0 bottom-0 left-0 border-t p-4">
           <div className="grid gap-2">
             <SheetClose asChild>
               <Button variant="outline" className="w-full" asChild>

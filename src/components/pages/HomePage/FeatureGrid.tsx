@@ -1,5 +1,5 @@
 import SmallTitle from "@/components/SmallTitle";
-import { BarChart3, MessageCircle, Database } from "lucide-react";
+import { BarChart3, Database, MessageCircle } from "lucide-react";
 
 export default function FeatureGrid() {
   return (
@@ -9,8 +9,8 @@ export default function FeatureGrid() {
       </div>
       <section className="mx-auto py-10">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-lg bg-amber-50 p-6">
-            <div className="mb-4 text-amber-500">
+          <div className="rounded-lg bg-amber-50 p-6 dark:bg-amber-900/20">
+            <div className="mb-4 text-amber-500 dark:text-amber-400">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-12 w-12"
@@ -26,49 +26,49 @@ export default function FeatureGrid() {
                 />
               </svg>
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-800">
+            <h3 className="mb-2 text-xl font-bold text-gray-800 dark:text-gray-100">
               Student Management
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Effortlessly manage student records, admissions, and academic
               details in one centralized system.
             </p>
           </div>
 
-          <div className="rounded-lg bg-blue-50 p-6">
-            <div className="mb-4 text-blue-500">
+          <div className="rounded-lg bg-blue-50 p-6 dark:bg-blue-900/20">
+            <div className="mb-4 text-blue-500 dark:text-blue-400">
               <BarChart3 className="h-12 w-12" />
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-800">
+            <h3 className="mb-2 text-xl font-bold text-gray-800 dark:text-gray-100">
               Grade & Report Generation
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Track student performance and automatically generate progress
               reports with ease.
             </p>
           </div>
 
-          <div className="rounded-lg bg-green-50 p-6">
-            <div className="mb-4 text-green-500">
+          <div className="rounded-lg bg-green-50 p-6 dark:bg-green-900/20">
+            <div className="mb-4 text-green-500 dark:text-green-400">
               <Database className="h-12 w-12" />
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-800">
+            <h3 className="mb-2 text-xl font-bold text-gray-800 dark:text-gray-100">
               Fee Tracking
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Monitor student fees, generate invoices, and keep financial
               records organized.
             </p>
           </div>
 
-          <div className="rounded-lg bg-pink-50 p-6">
-            <div className="mb-4 text-pink-500">
+          <div className="rounded-lg bg-pink-50 p-6 dark:bg-pink-900/20">
+            <div className="mb-4 text-pink-500 dark:text-pink-400">
               <MessageCircle className="h-12 w-12" />
             </div>
-            <h3 className="mb-2 text-xl font-bold text-gray-800">
+            <h3 className="mb-2 text-xl font-bold text-gray-800 dark:text-gray-100">
               Communication System
             </h3>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               Facilitate seamless communication between administrators,
               teachers, and staff.
             </p>

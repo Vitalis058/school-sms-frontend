@@ -6,9 +6,31 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Calendar, CalendarClock, User, Users } from "lucide-react";
+import { DepartmentType } from "@/types/types";
+import { format } from "date-fns";
+import {
+  BookOpen,
+  Calendar,
+  CalendarClock,
+  MousePointerClick,
+  User,
+  Users,
+} from "lucide-react";
 
-function DepartmentDetails() {
+interface DepartmentProps {
+  department: DepartmentType | undefined;
+}
+
+function DepartmentDetails({ department }: DepartmentProps) {
+  if (!department) {
+    return (
+      <div className="mt-14 flex flex-col items-center">
+        <p>Please click on department to view </p>
+        <MousePointerClick size={30} className="text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="flex-1 rounded-lg p-2 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
@@ -19,7 +41,7 @@ function DepartmentDetails() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Department name</BreadcrumbPage>
+              <BreadcrumbPage>{department?.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -33,7 +55,9 @@ function DepartmentDetails() {
                 <p className="text-sm font-semibold">Staff No</p>
                 <Users size={15} className="text-muted-foreground" />
               </div>
-              <p className="text-lg font-bold md:text-xl">102</p>
+              <p className="text-lg font-bold md:text-xl">
+                {department?._count.teachers}
+              </p>
             </CardContent>
           </Card>
 
@@ -43,7 +67,9 @@ function DepartmentDetails() {
                 <p className="text-sm font-semibold">Subjects No</p>
                 <BookOpen size={15} className="text-muted-foreground" />
               </div>
-              <p className="text-lg font-bold md:text-xl">23</p>
+              <p className="text-lg font-bold md:text-xl">
+                {department?._count.subjects}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -62,7 +88,11 @@ function DepartmentDetails() {
                   <span className="text-muted-foreground">Created on</span>
                 </span>
 
-                <p>November 24th 2024</p>
+                {department && (
+                  <p>
+                    {format(new Date(department?.createdAt), "MMMM d, yyyy")}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between text-sm font-semibold">

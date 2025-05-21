@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -18,25 +16,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import LoadingButton from "@/components/LoadingButton";
 import { Progress } from "@/components/ui/progress";
+import { API_URL } from "@/constants/apiUrl";
+import { DepartmentType, SubjectType } from "@/types/types";
 import {
   TeacherEnrollmentSchema,
   TeacherEnrollmentType,
 } from "@/utils/validation";
-import LoadingButton from "@/components/LoadingButton";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { API_URL } from "@/constants/apiUrl";
-import { toast } from "sonner";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { DepartmentType, SubjectType } from "@/types/types";
-import PersonalInfo from "./personalInfo";
-import AddressInfo from "./AddressInfo";
-import ProfessionalInfo from "./ProfessionalInfo";
-import CurrentEmploymentDetails from "./CurrentEmploymentDetails";
-import PreviousEmployment from "./PreviousEmployment";
+import { toast } from "sonner";
 import AdditionalInfo from "./AdditionalInfo";
+import AddressInfo from "./AddressInfo";
+import CurrentEmploymentDetails from "./CurrentEmploymentDetails";
+import PersonalInfo from "./personalInfo";
+import PreviousEmployment from "./PreviousEmployment";
+import ProfessionalInfo from "./ProfessionalInfo";
 import ReviewInfo from "./ReviewInfo";
 
 // Define the steps of the form
@@ -84,7 +82,7 @@ export default function TeacherEnrollmentForm({
       gradesCanTeach: [],
       employmentType: "full_time",
       position: "",
-      department: "",
+      departmentId: "",
       previousEmployments: [
         {
           institution: "",

@@ -75,7 +75,7 @@ export const TeacherEnrollmentSchema = z.object({
     required_error: "Joining date is required",
   }),
   position: z.string().min(1, "Position is required"),
-  department: z.string().min(1, "Department is required"),
+  departmentId: z.string().min(1, "Department is required"),
 
   // Previous Employment
   previousEmployments: z.array(
@@ -158,4 +158,31 @@ export const subjectSchema = z.object({
   labRequired: z
     .union([z.literal("on"), z.null(), z.undefined()])
     .transform((val) => val === "on"),
+});
+
+//lesson creation schema
+export const lessonSchema = z.object({
+  name: z.string().min(1, "Lesson name is required"),
+  description: z.string().optional(),
+  materials: z.any().optional(), // or use z.record(z.any()) if it's expected to be an object
+  assignment: z.any().optional(), // same here
+  day: z.string(),
+  teacherId: z.string().min(1, "Teacher is required"),
+  subjectId: z.string().min(1, "Subject  is required"),
+  streamId: z.string().min(1, "Stream  is required"),
+  timeSlotId: z.string().min(1, "time Slot is required"),
+});
+
+// time slot creation schema
+
+const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+export const TimeSlotSchema = z.object({
+  name: z.string().min(1, "Slot name is required"),
+  startTime: z
+    .string()
+    .regex(timeRegex, { message: "Invalid time format (expected HH:mm)" }),
+  endTime: z
+    .string()
+    .regex(timeRegex, { message: "Invalid time format (expected HH:mm)" }),
 });

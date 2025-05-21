@@ -17,6 +17,7 @@ const initialState = {
 export const fetchTeachers = createAsyncThunk(
   "teachers/fetch",
   async (_, { rejectWithValue }) => {
+    //reject with value called when an error is detected
     const response = await getTeachers();
     return response.data;
   },
