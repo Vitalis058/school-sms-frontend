@@ -5,7 +5,7 @@ const columnHelper = createColumnHelper<TeacherType>();
 
 export const teachersColumn = [
   columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
-    id: "full_name",
+    id: "fullname",
     header: "Full name",
   }),
 
@@ -25,8 +25,7 @@ export const teachersColumn = [
     header: "Home city",
   }),
 
-  columnHelper.accessor((row) => row.Department.name, {
-    header: "Department",
-    id: "department",
+  columnHelper.accessor("position", {
+    header: "Position",
   }),
 ];
