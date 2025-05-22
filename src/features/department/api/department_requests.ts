@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { API_URL } from "@/constants/apiUrl";
 
+//getting departments
 export async function getDepartments() {
   try {
     const response = await fetch(`${API_URL}/api/v1/departments`);
@@ -12,6 +13,23 @@ export async function getDepartments() {
     }
 
     return res;
+  } catch (error: any) {
+    throw new Error(error.message || "internal server error");
+  }
+}
+
+//get a department
+export async function getDepartment(id: string | undefined) {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/departments/${id}`);
+
+    if (!response.ok) {
+      throw new Error("something went wrong");
+    }
+
+    const data = await response.json();
+
+    return data.data;
   } catch (error: any) {
     throw new Error(error.message || "internal server error");
   }

@@ -41,15 +41,15 @@ const initialState = {
 };
 
 type DepartmentCardTypes = {
-  setSelectedDepartment: Dispatch<SetStateAction<DepartmentType | undefined>>;
+  setSelectedDepartmentId: Dispatch<SetStateAction<string | undefined>>;
   departments?: DepartmentType[];
-  selectedDepartment?: DepartmentType;
+  selectedDepartmentId?: string;
 };
 
 function DepartmentCard({
-  setSelectedDepartment,
+  setSelectedDepartmentId: setSelectedDepartment,
   departments,
-  selectedDepartment,
+  selectedDepartmentId,
 }: DepartmentCardTypes) {
   const [isDepartmentModalOpen, setIsDepartmentModalOpen] = useState(false);
   const [departmentState, departmentFormAction, departmentIsPending] =
@@ -147,11 +147,11 @@ function DepartmentCard({
             <TooltipProvider key={departmentItem.id}>
               <Card
                 className={`border-muted-foreground w-full cursor-pointer py-2 transition-all duration-200 hover:shadow-md ${
-                  selectedDepartment?.id === departmentItem.id
+                  selectedDepartmentId === departmentItem.id
                     ? "bg-primary/10 border-primary"
                     : ""
                 }`}
-                onClick={() => setSelectedDepartment(departmentItem)}
+                onClick={() => setSelectedDepartment(departmentItem.id)}
               >
                 <CardContent className="px-3">
                   <div className="flex items-center justify-between">
