@@ -27,7 +27,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useAppSelector } from "@/store/hooks";
+import {
+  useGetAllSubjectsQuery,
+  useGetAllTeachersQuery,
+  useGetAllTimeSlotsQuery,
+} from "@/redux/services";
 import { StreamsType } from "@/types/types";
 import { Plus } from "lucide-react";
 import LoadingButton from "../../../components/LoadingButton";
@@ -43,9 +47,9 @@ const initialState = {
 };
 
 function Lessons({ stream }: LessonsProps) {
-  const { teachers } = useAppSelector((state) => state.teachers);
-  const { subjects } = useAppSelector((state) => state.subjects);
-  const { timeSlot } = useAppSelector((state) => state.timeSlots);
+  const { data: teachers = [] } = useGetAllTeachersQuery();
+  const { data: subjects = [] } = useGetAllSubjectsQuery();
+  const { data: timeSlots = [] } = useGetAllTimeSlotsQuery();
 
   const [state, action, isPending] = useActionState(
     createLessonAction,
@@ -99,12 +103,12 @@ function Lessons({ stream }: LessonsProps) {
                 <Label htmlFor="timeSlot" className="text-right">
                   Time Slot
                 </Label>
-                <Select name="timeSlotId">
+                <Select name="timeSlotId" disabled={!timeSlots.length}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select the timeSlot" />
                   </SelectTrigger>
                   <SelectContent>
-                    {timeSlot.map((item) => (
+                    {timeSlots.map((item) => (
                       <SelectItem id="day" value={item.id} key={item.id}>
                         {item.name}
                       </SelectItem>

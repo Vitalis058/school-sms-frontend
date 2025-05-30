@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAppDispatch } from "@/store/hooks";
+import { useGetAllDepartmentsQuery } from "@/redux/services";
 import { DepartmentType } from "@/types/types";
 import { Pen, Plus, School, Trash2Icon } from "lucide-react";
 import {
@@ -31,7 +31,6 @@ import {
   useState,
 } from "react";
 import { createDepartment } from "../actions/department_actions";
-import { createDepartmentAction } from "../slice";
 
 const initialState = {
   message: undefined,
@@ -55,13 +54,13 @@ function DepartmentCard({
   const [departmentState, departmentFormAction, departmentIsPending] =
     useActionState(createDepartment, initialState);
 
-  const dispatch = useAppDispatch();
+  const { refetch } = useGetAllDepartmentsQuery();
 
   useEffect(() => {
     if (departmentState.success && departmentState.newDepartment) {
-      dispatch(createDepartmentAction(departmentState.newDepartment));
+      refetch();
     }
-  }, [departmentState.success, departmentState.newDepartment, dispatch]);
+  }, [departmentState.success, departmentState.newDepartment, refetch]);
 
   return (
     <div className="w-full max-w-[300px] flex-1">

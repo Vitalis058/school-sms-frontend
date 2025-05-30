@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import ErrorComponent from "@/components/ErrorComponent";
+import LoadingComponent from "@/components/LoadingComponent";
+import { getGradeStreams } from "@/features/stream/api/streams_requests";
+import { useGetAllGradesQuery, useGetAllTeachersQuery } from "@/redux/services";
+import { GradesType } from "@/types/types";
+import { Loader2, MousePointerClick } from "lucide-react";
+import { useEffect, useState } from "react";
 import GradesCard from "../../../../features/stream/components/GradesCard";
 import StreamsCard from "../../../../features/stream/components/StreamsCard";
-import { GradesType } from "@/types/types";
-import { useAppSelector } from "@/store/hooks";
-import { getGradeStreams } from "@/features/stream/api/streams_requests";
 
 function StreamsPage() {
-  const { teachers } = useAppSelector((state) => state.teachers);
-  const { grades } = useAppSelector((state) => state.grades);
-
   const [selectedClass, setSelectedClass] = useState<GradesType | undefined>(
     undefined,
   );
+
   const [streams, setStreams] = useState<
     {
       id: string;
@@ -31,9 +32,8 @@ function StreamsPage() {
       if (selectedClass) {
         setLoading(true);
         try {
-          const streams = await getGradeStreams(selectedClass.id);
-          setStreams(streams.data);
-          console.log(streams, "streams");
+          const streams = await getGradeStreams(selectedClass.id); // update ukitumia redux query
+          setStreams(streams);
         } catch (error) {
           console.error("Error fetching streams:", error);
         } finally {
@@ -47,28 +47,47 @@ function StreamsPage() {
     getStreamsData();
   }, [selectedClass]);
 
+  const {
+    isError: teachersError,
+    isLoading: teachersIsLoading,
+    data: teachersData,
+  } = useGetAllTeachersQuery();
+
+  const {
+    isError: gradesError,
+    isLoading: gradesIsLoading,
+    data: gradesData,
+  } = useGetAllGradesQuery();
+
+  if (teachersError || gradesError) return <ErrorComponent />;
+  if (teachersIsLoading || gradesIsLoading) return <LoadingComponent />;
+
   return (
     <div className="flex gap-6 p-4">
       {/* Left sidebar - Classes */}
       <GradesCard
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
-        classes={grades}
+        classes={gradesData}
       />
 
       {/* Right content - Streams */}
-      <div className="flex-1">
+      <div className="flex-2/3 sm:flex-1">
         {selectedClass === undefined ? (
-          <p className="text-gray-500">
-            Please click on a class to view its streams.
-          </p>
+          <div className="mt-14 flex flex-col items-center">
+            <p>Please click on grade to view its streams </p>
+            <MousePointerClick size={30} className="text-primary" />
+          </div>
         ) : loading ? (
-          <p className="text-blue-500">Loading streams...</p>
+          <div className="flex items-center justify-center gap-2 py-4 text-blue-500">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <p className="text-sm font-medium">Loading streams...</p>
+          </div>
         ) : (
           <StreamsCard
             selectedClass={selectedClass}
             streams={streams}
-            teachers={teachers}
+            teachers={teachersData || []}
           />
         )}
       </div>

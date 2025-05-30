@@ -1,15 +1,16 @@
 "use client";
 
+import ErrorComponent from "@/components/ErrorComponent";
+import LoadingComponent from "@/components/LoadingComponent";
 import { getDepartment } from "@/features/department/api/department_requests";
 import DepartmentCard from "@/features/department/components/DepartmentCard";
 import DepartmentDetails from "@/features/department/components/DepartmentDetails";
-import { useAppSelector } from "@/store/hooks";
+import { useGetAllDepartmentsQuery } from "@/redux/services";
 import { DepartmentType } from "@/types/types";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function DepartmentsPage() {
-  const { departments } = useAppSelector((state) => state.department);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedDepartment, setSelectedDepartment] = useState<
     DepartmentType | undefined
@@ -27,6 +28,15 @@ function DepartmentsPage() {
     }
     fetchDepartment();
   }, [selectedDepartmentId]);
+
+  const {
+    isLoading: departmentsLoading,
+    data: departments,
+    isError,
+  } = useGetAllDepartmentsQuery();
+
+  if (isError) return <ErrorComponent />;
+  if (departmentsLoading) return <LoadingComponent />;
 
   return (
     <div className="flex gap-6 p-4">

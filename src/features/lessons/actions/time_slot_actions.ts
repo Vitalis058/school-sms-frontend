@@ -31,7 +31,7 @@ export const createTimeSlot = async (
     }
 
     //send the data to the api
-    const response = await fetch(`${API_URL}/api/v1/time-slot`, {
+    const response = await fetch(`${API_URL}/api/v1/timeslots`, {
       method: "post",
       headers: {
         "Content-Type": "application/json",

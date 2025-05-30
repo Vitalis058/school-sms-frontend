@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { Rethink_Sans } from "next/font/google";
-import QueryProvider from "@/utils/QueryProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/utils/ThemeProvider";
+import QueryProvider from "@/utils/QueryProvider";
 import { ReduxProvider } from "@/utils/ReduxProvider";
+import { ThemeProvider } from "@/utils/ThemeProvider";
+import type { Metadata } from "next";
+import { Rethink_Sans } from "next/font/google";
+import "./globals.css";
 
 const rethink = Rethink_Sans({
   subsets: ["latin"],
@@ -24,9 +24,9 @@ export default function RootLayout({
   return (
     <QueryProvider>
       <ReduxProvider>
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
           <body
-            className={`${rethink.className} antialiased`}
+            className={`${rethink.className} max-w-[1300px] antialiased`}
             suppressHydrationWarning
           >
             <ThemeProvider

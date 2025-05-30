@@ -24,8 +24,4 @@ export const teachersColumn = [
   columnHelper.accessor("city", {
     header: "Home city",
   }),
-
-  columnHelper.accessor("position", {
-    header: "Position",
-  }),
 ];

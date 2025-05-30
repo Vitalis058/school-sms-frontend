@@ -20,6 +20,8 @@ export async function getDepartments() {
 
 //get a department
 export async function getDepartment(id: string | undefined) {
+  if (!id) return;
+
   try {
     const response = await fetch(`${API_URL}/api/v1/departments/${id}`);
 
@@ -29,7 +31,7 @@ export async function getDepartment(id: string | undefined) {
 
     const data = await response.json();
 
-    return data.data;
+    return data;
   } catch (error: any) {
     throw new Error(error.message || "internal server error");
   }

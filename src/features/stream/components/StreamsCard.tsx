@@ -1,6 +1,6 @@
-import React, { useActionState, useState } from "react";
-import { Plus, School } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Plus, School } from "lucide-react";
+import { useActionState, useState } from "react";
 
 import {
   Dialog,
@@ -22,9 +22,6 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { ClassCard } from "@/features/stream/components/ClassCard";
-import LoadingButton from "../../../components/LoadingButton";
 import {
   Select,
   SelectContent,
@@ -32,8 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import { StreamCard } from "@/features/stream/components/StreamCard";
 import { TeacherType } from "@/types/types";
+import Link from "next/link";
+import LoadingButton from "../../../components/LoadingButton";
 import { createStreamAction } from "../actions/stream_actions";
 
 type StreamsCardTypes = {
@@ -69,7 +69,7 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
   return (
     <div className="flex-1 rounded-lg p-2 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
-        <Breadcrumb>
+        <Breadcrumb className="hidden sm:block">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink>Grades</BreadcrumbLink>
@@ -90,7 +90,7 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">
               <Plus className="h-4 w-4" />
-              Add Stream
+              <p className="hidden sm:block">Add Stream</p>
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
@@ -194,7 +194,7 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {streams.map((item) => (
-            <ClassCard
+            <StreamCard
               name={item.name}
               teacher={item.classTeacher}
               studentCount={item.students}

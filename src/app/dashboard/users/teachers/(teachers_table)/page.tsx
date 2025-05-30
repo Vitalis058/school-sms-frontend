@@ -1,12 +1,15 @@
 "use client";
 import DataTable from "@/components/DataTable";
-import { useAppSelector } from "@/store/hooks";
+import ErrorComponent from "@/components/ErrorComponent";
+import LoadingComponent from "@/components/LoadingComponent";
+import { useGetAllTeachersQuery } from "@/redux/services";
 import { teachersColumn } from "./columns";
 
 function TeachersData() {
-  const { teachers } = useAppSelector((state) => state.teachers);
+  const { isError, data: teachers, isLoading } = useGetAllTeachersQuery();
 
-  console.log(teachers);
+  if (isError) return <ErrorComponent />;
+  if (isLoading) return <LoadingComponent />;
 
   return (
     <div className="p-4">
@@ -14,7 +17,7 @@ function TeachersData() {
 
       <DataTable
         columns={teachersColumn}
-        data={teachers}
+        data={teachers || []}
         dataName="teachers"
         link="/dashboard/users/teachers/new"
       />

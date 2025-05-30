@@ -16,7 +16,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import ErrorComponent from "@/components/ErrorComponent";
 import LoadingButton from "@/components/LoadingButton";
+import LoadingComponent from "@/components/LoadingComponent";
 import { Progress } from "@/components/ui/progress";
 import { API_URL } from "@/constants/apiUrl";
 import AdditionalInfo from "@/features/teacher/forms/AdditionalInfo";
@@ -26,7 +28,10 @@ import PersonalInfo from "@/features/teacher/forms/personalInfo";
 import PreviousEmployment from "@/features/teacher/forms/PreviousEmployment";
 import ProfessionalInfo from "@/features/teacher/forms/ProfessionalInfo";
 import ReviewInfo from "@/features/teacher/forms/ReviewInfo";
-import { useAppSelector } from "@/store/hooks";
+import {
+  useGetAllDepartmentsQuery,
+  useGetAllSubjectsQuery,
+} from "@/redux/services";
 import {
   TeacherEnrollmentSchema,
   TeacherEnrollmentType,
@@ -49,9 +54,6 @@ const steps = [
 ];
 
 export default function TeacherEnrollmentForm() {
-  const { subjects } = useAppSelector((state) => state.subjects);
-  const { departments } = useAppSelector((state) => state.department);
-
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
 
@@ -190,6 +192,21 @@ export default function TeacherEnrollmentForm() {
     console.log(data);
   };
 
+  const {
+    isError: subjectError,
+    isLoading: subjectsLoading,
+    data: subjects,
+  } = useGetAllSubjectsQuery();
+
+  const {
+    isError: departmentError,
+    isLoading: departmentLoading,
+    data: departments,
+  } = useGetAllDepartmentsQuery();
+
+  if (departmentError || subjectError) return <ErrorComponent />;
+  if (departmentLoading || subjectsLoading) return <LoadingComponent />;
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 0:
@@ -198,10 +215,10 @@ export default function TeacherEnrollmentForm() {
         return <AddressInfo />;
 
       case 2:
-        return <ProfessionalInfo subjects={subjects} />;
+        return <ProfessionalInfo subjects={subjects || []} />;
 
       case 3:
-        return <CurrentEmploymentDetails departments={departments} />;
+        return <CurrentEmploymentDetails departments={departments || []} />;
 
       case 4:
         return (
@@ -255,9 +272,9 @@ export default function TeacherEnrollmentForm() {
       case 6:
         return (
           <ReviewInfo
-            subjects={subjects}
+            subjects={subjects || []}
             form={form}
-            departments={departments}
+            departments={departments || []}
           />
         );
       default:

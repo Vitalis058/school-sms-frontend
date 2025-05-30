@@ -1,12 +1,25 @@
 "use client";
 
-import { GraduationCapIcon, Pen, Plus, Trash2Icon, Users } from "lucide-react";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useActionState,
-  useState,
-} from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { createGradeAction } from "@/features/grade/actions/grade_actions";
+import { GradesType } from "@/types/types";
+import {
+  Edit3,
+  Ellipsis,
+  GraduationCapIcon,
+  Plus,
+  Trash2Icon,
+  Users,
+} from "lucide-react";
+import { Dispatch, SetStateAction, useActionState, useState } from "react";
+import LoadingButton from "../../../components/LoadingButton";
+import { Button } from "../../../components/ui/button";
+import { Card, CardContent } from "../../../components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,19 +28,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../../components/ui/dialog";
-import { Button } from "../../../components/ui/button";
-import { Label } from "../../../components/ui/label";
 import { Input } from "../../../components/ui/input";
-import LoadingButton from "../../../components/LoadingButton";
-import { Card, CardContent } from "../../../components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../../../components/ui/tooltip";
-import { GradesType } from "@/types/types";
-import { createGradeAction } from "@/features/grade/actions/grade_actions";
+import { Label } from "../../../components/ui/label";
+import { TooltipProvider } from "../../../components/ui/tooltip";
 
 const initialState = {
   message: undefined,
@@ -69,18 +72,18 @@ function GradesCard({
   );
 
   return (
-    <div className="w-full max-w-[300px] flex-1">
-      <div className="mb-4 flex items-center justify-between">
+    <div className="w-full max-w-[300px] flex-1/3 sm:flex-1">
+      <div className="mb-4 flex items-center justify-between gap-4">
         <span className="flex items-center gap-2">
           <GraduationCapIcon className="h-6 w-6 text-slate-700" />
-          <p className="text-lg font-semibold">Classes</p>
+          <p className="text-sm font-semibold sm:text-lg">Classes</p>
         </span>
 
         {/* Add Class Dialog */}
         <Dialog open={isClassModalOpen} onOpenChange={setIsClassModalOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="icon">
-              <Plus className="h-5 w-5" />
+              <Plus className="h-3 w-3 sm:h-5 sm:w-5" />
               <span className="sr-only">Add new class</span>
             </Button>
           </DialogTrigger>
@@ -141,9 +144,9 @@ function GradesCard({
                 onClick={() => setSelectedClass(classItem)}
               >
                 <CardContent className="px-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex justify-between">
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-2 md:flex-row md:items-center">
                         <h3 className="line-clamp-1 text-sm font-bold">
                           {classItem.name}
                         </h3>
@@ -158,42 +161,23 @@ function GradesCard({
                         </span>
                       </div>
                     </div>
-
-                    <div className="flex gap-2">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-slate-100"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Pen size={16} className="text-slate-600" />
-                            <span className="sr-only">Edit</span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Edit class</p>
-                        </TooltipContent>
-                      </Tooltip>
-
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full hover:bg-red-50"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Trash2Icon size={16} className="text-red-500" />
-                            <span className="sr-only">Delete</span>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Delete class</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="self-start outline-0">
+                        <Ellipsis />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>
+                          <button className="hover:bg-primary/20 flex w-full gap-2">
+                            <Edit3 className="text-primary" />
+                            <p>Edit</p>
+                          </button>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="flex items-center gap-2">
+                          <Trash2Icon className="text-red-500" />
+                          <p>Delete</p>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </CardContent>
               </Card>

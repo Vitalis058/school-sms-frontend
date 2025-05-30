@@ -1,7 +1,6 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import React from "react";
 import {
   Card,
   CardContent,
@@ -11,10 +10,10 @@ import {
 } from "@/components/ui/card";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GradesType, ParentType } from "@/types/types";
-import { useAppSelector } from "@/store/hooks";
 import AddBulkStudentForm from "@/features/student/forms/AddBulkStudentForm";
 import AddSingleStudentForm from "@/features/student/forms/AddSingleStudentForm";
+import { useAppSelector } from "@/redux/hooks";
+import { GradesType, ParentType } from "@/types/types";
 
 function NewStudent() {
   const { grades } = useAppSelector((state) => state.grades);

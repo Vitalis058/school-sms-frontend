@@ -1,29 +1,13 @@
 "use client";
 
-import React from "react";
 import {
-  BadgeCheck,
-  BarChart3,
-  Bell,
-  BookOpenCheck,
-  Bus,
-  ChevronRight,
-  ChevronsUpDown,
-  CreditCard,
-  GraduationCap,
-  LogOut,
-  MessageSquare,
-  Package,
-  PieChart,
-  Settings,
-  Sparkles,
-  UserPen,
-  Users,
-} from "lucide-react";
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarHeader,
   SidebarMenu,
@@ -35,21 +19,20 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+  BarChart3,
+  BookOpenCheck,
+  Bus,
+  ChevronRight,
+  CreditCard,
+  GraduationCap,
+  MessageSquare,
+  Package,
+  PieChart,
+  Settings,
+  UserPen,
+  Users,
+} from "lucide-react";
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Logo from "@/components/nav/Logo";
 import Link from "next/link";
 
@@ -57,7 +40,6 @@ const data = {
   user: {
     name: "shadcn",
     email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
   },
 
   navMain: [
@@ -72,7 +54,7 @@ const data = {
       url: "/dashboard/student-management",
       icon: GraduationCap,
       items: [
-        { title: "Student Directory", url: "/dashboard/student-management" },
+        { title: "Students", url: "/dashboard/student-management" },
         {
           title: "streams",
           url: "/dashboard/student-management/class-streams",
@@ -85,7 +67,6 @@ const data = {
           title: "Performance",
           url: "/dashboard/student-management/performance",
         },
-        { title: "Fees", url: "/dashboard/student-management/fees" },
       ],
     },
     {
@@ -93,10 +74,8 @@ const data = {
       url: "/dashboard/academics",
       icon: BookOpenCheck,
       items: [
-        { title: "Curriculum", url: "/dashboard/academics/curriculum" },
         { title: "Subjects", url: "/dashboard/academics/subjects" },
         { title: "Lessons", url: "/dashboard/academics/lessons" },
-        { title: "Assignments", url: "/dashboard/academics/assignments" },
         { title: "Examinations", url: "/dashboard/academics/examinations" },
         { title: "Report Cards", url: "/dashboard/academics/report-cards" },
       ],
@@ -287,85 +266,6 @@ function AppSidebar() {
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <Avatar className="h-8 w-8 rounded-lg">
-                    <AvatarImage src={data.user.avatar} alt={data.user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">
-                      {data.user.name}
-                    </span>
-                    <span className="truncate text-xs">{data.user.email}</span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto size-4" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                side="bottom"
-                align="end"
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                    <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarImage
-                        src={data.user.avatar}
-                        alt={data.user.name}
-                      />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                    </Avatar>
-                    <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">
-                        {data.user.name}
-                      </span>
-                      <span className="truncate text-xs">
-                        {data.user.email}
-                      </span>
-                    </div>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <CreditCard />
-                    Billing
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Bell />
-                    Notifications
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut />
-                  Log out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
