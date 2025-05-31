@@ -20,7 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useGetAllDepartmentsQuery } from "@/redux/services";
+import { useGetDepartmentsQuery } from "@/store/api/academicsApi";
 import { DepartmentType } from "@/types/types";
 import { Pen, Plus, School, Trash2Icon } from "lucide-react";
 import {
@@ -54,7 +54,7 @@ function DepartmentCard({
   const [departmentState, departmentFormAction, departmentIsPending] =
     useActionState(createDepartment, initialState);
 
-  const { refetch } = useGetAllDepartmentsQuery();
+  const { refetch } = useGetDepartmentsQuery();
 
   useEffect(() => {
     if (departmentState.success && departmentState.newDepartment) {

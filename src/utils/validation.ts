@@ -102,7 +102,7 @@ export type TeacherEnrollmentType = z.infer<typeof TeacherEnrollmentSchema>;
 //class creation
 export const StreamCreationSchema = z.object({
   name: z.string().min(1, { message: "Class name is required" }),
-  teacherId: z.string().min(1, { message: "class teacher is required" }),
+  teacherId: z.string().optional(),
   gradeId: z.string().min(1, "A grade is required"),
 });
 
@@ -178,11 +178,9 @@ export const lessonSchema = z.object({
 const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 export const TimeSlotSchema = z.object({
-  name: z.string().min(1, "Slot name is required"),
-  startTime: z
-    .string()
-    .regex(timeRegex, { message: "Invalid time format (expected HH:mm)" }),
-  endTime: z
-    .string()
-    .regex(timeRegex, { message: "Invalid time format (expected HH:mm)" }),
+  name: z.string().min(1, "Time slot name is required"),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
 });
+
+export type TimeSlotTYpes = z.infer<typeof TimeSlotSchema>;

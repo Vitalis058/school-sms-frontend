@@ -2,11 +2,38 @@
 import DataTable from "@/components/DataTable";
 import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/LoadingComponent";
-import { useGetAllTeachersQuery } from "@/redux/services";
-import { teachersColumn } from "./columns";
+import { useGetTeachersQuery } from "@/store/api/teacherApi";
+import { ColumnDef } from "@tanstack/react-table";
+import { Teacher } from "@/store/types";
+
+// Define columns directly with proper typing
+const teacherColumns: ColumnDef<Teacher>[] = [
+  {
+    accessorFn: (row) => `${row.firstName} ${row.lastName}`,
+    id: "fullName",
+    header: "Full Name",
+  },
+  {
+    accessorKey: "gender",
+    header: "Gender",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "city",
+    header: "Home City",
+  },
+];
 
 function TeachersData() {
-  const { isError, data: teachers, isLoading } = useGetAllTeachersQuery();
+  const { isError, data: teachersResponse, isLoading } = useGetTeachersQuery({});
+  const teachers = teachersResponse?.data || [];
 
   if (isError) return <ErrorComponent />;
   if (isLoading) return <LoadingComponent />;
@@ -16,8 +43,8 @@ function TeachersData() {
       <h2 className="mb-4 text-xl font-bold">Teachers data</h2>
 
       <DataTable
-        columns={teachersColumn}
-        data={teachers || []}
+        columns={teacherColumns}
+        data={teachers}
         dataName="teachers"
         link="/dashboard/users/teachers/new"
       />

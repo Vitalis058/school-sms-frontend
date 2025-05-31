@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus, School } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useState } from "react";
 
 import {
   Dialog,
@@ -34,7 +34,29 @@ import { StreamCard } from "@/features/stream/components/StreamCard";
 import { TeacherType } from "@/types/types";
 import Link from "next/link";
 import LoadingButton from "../../../components/LoadingButton";
-import { createStreamAction } from "../actions/stream_actions";
+import { useCreateStreamMutation, useUpdateStreamMutation, useDeleteStreamMutation } from "@/store/api/academicsApi";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { StreamCreationSchema, StreamCreationTYpes } from "@/utils/validation";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type StreamsCardTypes = {
   selectedClass: {
@@ -54,17 +76,102 @@ type StreamsCardTypes = {
 };
 
 function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
-  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedStream, setSelectedStream] = useState<any>(null);
 
-  const initialState = {
-    message: undefined,
-    errors: {},
+  const [createStream, { isLoading: isCreating }] = useCreateStreamMutation();
+  const [updateStream, { isLoading: isUpdating }] = useUpdateStreamMutation();
+  const [deleteStream, { isLoading: isDeleting }] = useDeleteStreamMutation();
+
+  // Form for creating streams
+  const createForm = useForm<StreamCreationTYpes>({
+    resolver: zodResolver(StreamCreationSchema),
+    defaultValues: {
+      name: "",
+      teacherId: "none",
+      gradeId: selectedClass?.id || "",
+    },
+  });
+
+  // Form for editing streams
+  const editForm = useForm<StreamCreationTYpes>({
+    resolver: zodResolver(StreamCreationSchema),
+    defaultValues: {
+      name: "",
+      teacherId: "none",
+      gradeId: selectedClass?.id || "",
+    },
+  });
+
+  // Handle create stream
+  const handleCreateStream = async (data: StreamCreationTYpes) => {
+    try {
+      await createStream({
+        name: data.name,
+        gradeId: selectedClass.id,
+        teacherId: data.teacherId === "none" ? undefined : data.teacherId,
+      }).unwrap();
+      
+      toast.success("Stream created successfully!");
+      setIsCreateDialogOpen(false);
+      createForm.reset();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to create stream");
+    }
   };
 
-  const [streamState, streamFormAction, streamIsPending] = useActionState(
-    createStreamAction,
-    initialState,
-  );
+  // Handle edit stream
+  const handleEditStream = async (data: StreamCreationTYpes) => {
+    if (!selectedStream) return;
+    
+    try {
+      await updateStream({
+        id: selectedStream.id,
+        data: {
+          name: data.name,
+          teacherId: data.teacherId === "none" ? undefined : data.teacherId,
+        },
+      }).unwrap();
+      
+      toast.success("Stream updated successfully!");
+      setIsEditDialogOpen(false);
+      setSelectedStream(null);
+      editForm.reset();
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update stream");
+    }
+  };
+
+  // Handle delete stream
+  const handleDeleteStream = async () => {
+    if (!selectedStream) return;
+    
+    try {
+      await deleteStream(selectedStream.id).unwrap();
+      toast.success("Stream deleted successfully!");
+      setIsDeleteDialogOpen(false);
+      setSelectedStream(null);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to delete stream");
+    }
+  };
+
+  // Handle edit click
+  const handleEditClick = (stream: any) => {
+    setSelectedStream(stream);
+    editForm.setValue("name", stream.name);
+    editForm.setValue("teacherId", stream.teacherId || "none");
+    editForm.setValue("gradeId", selectedClass.id);
+    setIsEditDialogOpen(true);
+  };
+
+  // Handle delete click
+  const handleDeleteClick = (stream: any) => {
+    setSelectedStream(stream);
+    setIsDeleteDialogOpen(true);
+  };
 
   return (
     <div className="flex-1 rounded-lg p-2 shadow-sm">
@@ -86,7 +193,7 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
         </Breadcrumb>
 
         {/* Add Stream Dialog */}
-        <Dialog>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button size="sm" className="gap-1">
               <Plus className="h-4 w-4" />
@@ -100,82 +207,165 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
                 Add a new stream to class {selectedClass?.name}.
               </DialogDescription>
             </DialogHeader>
-            {streamState.message && (
-              <p className="text-sm text-green-500">{streamState.message}</p>
-            )}
-
-            {streamState.errors?.error && (
-              <p className="text-sm text-red-500">
-                {streamState.errors.error[0]}
-              </p>
-            )}
-            <form action={streamFormAction}>
-              <div className="grid gap-4 py-4">
-                <div className="space-y-2">
-                  {streamState.errors?.name && (
-                    <p className="text-sm text-red-500">
-                      {streamState.errors.name[0]}
-                    </p>
+            
+            <Form {...createForm}>
+              <form onSubmit={createForm.handleSubmit(handleCreateStream)} className="space-y-4">
+                <FormField
+                  control={createForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stream name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. 5a" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                  <Label htmlFor="name" className="text-right">
-                    Stream name
-                  </Label>
-                  <Input
-                    id="name"
-                    placeholder="e.g. 5a"
-                    className="col-span-3"
-                    name="name"
-                  />
-                </div>
+                />
 
-                <div className="hidden">
-                  <Label htmlFor="gradeId" className="text-right">
-                    Grade
-                  </Label>
-                  <Input
-                    id="gradeId"
-                    placeholder="Teacher name"
-                    className="col-span-3"
-                    name="gradeId"
-                    value={selectedClass?.id}
-                  />
-                </div>
+                <FormField
+                  control={createForm.control}
+                  name="teacherId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Teacher</FormLabel>
+                      <div className="flex gap-2">
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select a teacher" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none">No teacher assigned</SelectItem>
+                            {teachers.map((teacher) => (
+                              <SelectItem key={teacher.id} value={teacher.id}>
+                                {teacher.firstName} {teacher.lastName}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button size={"icon"} asChild type="button">
+                          <Link href={"/dashboard/users/teachers/new"}>
+                            <Plus />
+                          </Link>
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-                <div className="space-y-2">
-                  <Label htmlFor="teacherId" className="text-right">
-                    Teacher
-                  </Label>
+                <LoadingButton loading={isCreating} type="submit">
+                  Create stream
+                </LoadingButton>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Stream Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Edit Stream</DialogTitle>
+              <DialogDescription>
+                Update the stream details for {selectedStream?.name}.
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Form {...editForm}>
+              <form onSubmit={editForm.handleSubmit(handleEditStream)} className="space-y-4">
+                <FormField
+                  control={editForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Stream name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. 5a" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="teacherId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Teacher</FormLabel>
                   <div className="flex gap-2">
-                    <Select
-                      onValueChange={(value) => setSelectedTeacher(value)}
-                      value={selectedTeacher}
-                      name="teacherId"
-                    >
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a teacher" />
                       </SelectTrigger>
+                          </FormControl>
                       <SelectContent>
+                            <SelectItem value="none">No teacher assigned</SelectItem>
                         {teachers.map((teacher) => (
                           <SelectItem key={teacher.id} value={teacher.id}>
-                            {teacher.firstName}
+                                {teacher.firstName} {teacher.lastName}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button size={"icon"} asChild>
+                        <Button size={"icon"} asChild type="button">
                       <Link href={"/dashboard/users/teachers/new"}>
                         <Plus />
                       </Link>
                     </Button>
                   </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex gap-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => setIsEditDialogOpen(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <LoadingButton loading={isUpdating} type="submit" className="flex-1">
+                    Update stream
+                  </LoadingButton>
                 </div>
-              </div>
-              <LoadingButton loading={streamIsPending}>
-                Create stream
-              </LoadingButton>
             </form>
+            </Form>
           </DialogContent>
         </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the stream "{selectedStream?.name}" 
+                and remove all associated data.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setSelectedStream(null)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteStream}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <Separator className="my-2" />
@@ -198,8 +388,8 @@ function StreamsCard({ selectedClass, streams, teachers }: StreamsCardTypes) {
               name={item.name}
               teacher={item.classTeacher}
               studentCount={item.students}
-              onEdit={() => console.log("Edit class")}
-              onDelete={() => console.log("Delete class")}
+              onEdit={() => handleEditClick(item)}
+              onDelete={() => handleDeleteClick(item)}
               key={item.id}
             />
           ))}

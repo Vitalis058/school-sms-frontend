@@ -35,7 +35,7 @@ function Hero() {
               asChild
               variant={"outline"}
             >
-              <Link href="/contact-us">Get Started</Link>
+              <Link href="/sign-in">Get Started</Link>
             </Button>
 
             <Button className="rounded-full" asChild>

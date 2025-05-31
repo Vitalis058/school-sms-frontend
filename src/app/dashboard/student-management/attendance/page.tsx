@@ -1,7 +1,5 @@
-import React from "react";
+import { AttendanceManagement } from "@/features/attendance/components/AttendanceManagement";
 
-function Attendance() {
-  return <div>Attendance</div>;
+export default function AttendancePage() {
+  return <AttendanceManagement />;
 }
-
-export default Attendance;

@@ -1,20 +1,23 @@
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
-import logo from "./../../../public/logo.png";
+import { GraduationCap } from "lucide-react";
 
-function Logo({ width, height }: { width: number; height: number }) {
-  return (
-    <Link href={"/"}>
-      <Image
-        src={logo}
-        alt="school logo"
-        width={width}
-        height={height}
-        className="object-cover"
-      />
-    </Link>
-  );
+interface LogoProps {
+  width?: number;
+  height?: number;
+  className?: string;
 }
+
+const Logo: React.FC<LogoProps> = ({ width = 40, height = 40, className = "" }) => {
+  return (
+    <div className={`flex items-center justify-center ${className}`}>
+      <div 
+        className="bg-primary text-primary-foreground rounded-lg flex items-center justify-center"
+        style={{ width, height }}
+      >
+        <GraduationCap className="w-6 h-6" />
+      </div>
+    </div>
+  );
+};
 
 export default Logo;

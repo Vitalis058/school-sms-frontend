@@ -2,64 +2,68 @@
 
 import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/LoadingComponent";
-import { getGradeStreams } from "@/features/stream/api/streams_requests";
-import { useGetAllGradesQuery, useGetAllTeachersQuery } from "@/redux/services";
-import { GradesType } from "@/types/types";
-import { Loader2, MousePointerClick } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useGetGradesQuery, useGetStreamsByGradeQuery } from "@/store/api/academicsApi";
+import { useGetTeachersQuery } from "@/store/api/teacherApi";
+import { MousePointerClick } from "lucide-react";
+import { useState } from "react";
 import GradesCard from "../../../../features/stream/components/GradesCard";
 import StreamsCard from "../../../../features/stream/components/StreamsCard";
 
 function StreamsPage() {
-  const [selectedClass, setSelectedClass] = useState<GradesType | undefined>(
-    undefined,
-  );
-
-  const [streams, setStreams] = useState<
-    {
-      id: string;
-      name: string;
-      slug: string;
-      classTeacher: string;
-      students: number;
-    }[]
-  >([]);
-
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    async function getStreamsData() {
-      if (selectedClass) {
-        setLoading(true);
-        try {
-          const streams = await getGradeStreams(selectedClass.id); // update ukitumia redux query
-          setStreams(streams);
-        } catch (error) {
-          console.error("Error fetching streams:", error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setStreams([]);
-      }
-    }
-
-    getStreamsData();
-  }, [selectedClass]);
+  const [selectedClass, setSelectedClass] = useState<any>(undefined);
 
   const {
     isError: teachersError,
     isLoading: teachersIsLoading,
     data: teachersData,
-  } = useGetAllTeachersQuery();
+  } = useGetTeachersQuery({});
 
   const {
     isError: gradesError,
     isLoading: gradesIsLoading,
     data: gradesData,
-  } = useGetAllGradesQuery();
+  } = useGetGradesQuery();
 
-  if (teachersError || gradesError) return <ErrorComponent />;
+  const {
+    data: streamsResponse,
+    isLoading: streamsLoading,
+    isError: streamsError,
+  } = useGetStreamsByGradeQuery(selectedClass?.id || "", {
+    skip: !selectedClass?.id,
+  });
+
+  // Transform grades data to match legacy component expectations
+  const transformedGrades = gradesData?.map(grade => ({
+    id: grade.id,
+    name: grade.name,
+    students: "0", 
+    streams: "0"  
+  })) || [];
+
+  // Transform streams data - the backend now returns the correct structure
+  const transformedStreams = streamsResponse?.map(stream => ({
+    id: stream.id,
+    name: stream.name,
+    slug: stream.slug || stream.name.toLowerCase().replace(/\s+/g, '-'),
+    classTeacher: (stream as any).classTeacher || "Not assigned",
+    students: (stream as any).students || 0,
+    teacherId: (stream as any).teacherId,
+  })) || [];
+
+  // Transform teachers data with type assertion to avoid complex type issues
+  const transformedTeachers = teachersData?.data?.map(teacher => ({
+    ...teacher,
+    alternatePhone: teacher.alternatePhone || "",
+    certifications: teacher.certifications || "",
+    skills: teacher.skills || "",
+    languages: teacher.languages || "English",
+    additionalNotes: teacher.additionalNotes || "",
+    Department: teacher.Department || { id: "", name: "", description: "", _count: { teachers: 0 } },
+    subjectsCanTeach: [],
+    department: ""
+  })) as any[] || [];
+
+  if (teachersError || gradesError || streamsError) return <ErrorComponent />;
   if (teachersIsLoading || gradesIsLoading) return <LoadingComponent />;
 
   return (
@@ -68,7 +72,7 @@ function StreamsPage() {
       <GradesCard
         selectedClass={selectedClass}
         setSelectedClass={setSelectedClass}
-        classes={gradesData}
+        classes={transformedGrades}
       />
 
       {/* Right content - Streams */}
@@ -78,16 +82,11 @@ function StreamsPage() {
             <p>Please click on grade to view its streams </p>
             <MousePointerClick size={30} className="text-primary" />
           </div>
-        ) : loading ? (
-          <div className="flex items-center justify-center gap-2 py-4 text-blue-500">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <p className="text-sm font-medium">Loading streams...</p>
-          </div>
         ) : (
           <StreamsCard
             selectedClass={selectedClass}
-            streams={streams}
-            teachers={teachersData || []}
+            streams={transformedStreams}
+            teachers={transformedTeachers}
           />
         )}
       </div>

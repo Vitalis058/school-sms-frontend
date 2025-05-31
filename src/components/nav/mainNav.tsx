@@ -40,84 +40,84 @@ const features = [
     title: "Student Management",
     description:
       "Comprehensive student information system for managing enrollments, profiles, and academic records with ease",
-    href: "/features/student-management",
+    href: "/dashboard/student-management",
   },
   {
     icon: GraduationCap,
     title: "Academic Management",
     description:
       "Streamline curriculum planning, examinations, grading, and report card generation in one unified system",
-    href: "/features/academic-management",
+    href: "/dashboard/academics",
   },
   {
     icon: MessageSquare,
     title: "Communication Hub",
     description:
       "Integrated messaging system with multi-channel notifications for seamless school-wide communication",
-    href: "/features/communication",
+    href: "/contact-us",
   },
   {
     icon: DollarSign,
     title: "Financial Management",
     description:
       "Complete fee management system with online payments, invoicing, and comprehensive financial reporting",
-    href: "/features/finance",
+    href: "/dashboard/student-management/fees",
   },
   {
     icon: ClipboardList,
     title: "Staff Management",
     description:
       "Efficient tools for managing staff records, attendance, performance evaluation, and payroll processing",
-    href: "/features/staff-management",
+    href: "/dashboard/staff-management",
   },
   {
     icon: Bus,
     title: "Transport Management",
     description:
       "Real-time transport tracking, route management, and automated notifications for safe student transportation",
-    href: "/features/transport",
+    href: "/dashboard/transport",
   },
   {
     icon: BarChart2,
     title: "Analytics & Reports",
     description:
       "Powerful analytics tools for data-driven decisions with customizable reporting and insights",
-    href: "/features/analytics",
+    href: "/dashboard",
   },
   {
     icon: BookOpen,
     title: "Resource Management",
     description:
       "Digital library system, inventory tracking, and facility scheduling in one integrated platform",
-    href: "/features/resources",
+    href: "/dashboard/academics/subjects",
   },
   {
     icon: CalendarDays,
     title: "Attendance System",
     description:
       "Automated attendance tracking for students and staff with instant notification capabilities",
-    href: "/features/attendance",
+    href: "/dashboard/student-management/attendance",
   },
   {
     icon: FileText,
     title: "Examination Portal",
     description:
       "Complete examination management system from scheduling to result publication with secure access",
-    href: "/features/examinations",
+    href: "/dashboard/academics/examinations",
   },
   {
     icon: Bell,
     title: "Notice Board",
     description:
       "Digital notice board for announcements, events, and important updates with targeted distribution",
-    href: "/features/announcements",
+    href: "/dashboard/staff-management/leave-requests",
   },
   {
     icon: Shield,
     title: "Security & Access",
     description:
       "Role-based access control with data encryption and secure backups for complete peace of mind",
-    href: "/features/security",
+    href: "/dashboard/users",
   },
 ];
 
@@ -175,9 +175,7 @@ export default function MainNav() {
                         {features.map((feature, index) => (
                           <Link
                             key={index}
-                            href={`/feature/${feature.title
-                              .toLowerCase()
-                              .replace(/\s+/g, "-")}`}
+                            href={feature.href}
                             className="group block"
                           >
                             <div className="flex items-start gap-4">
@@ -201,11 +199,12 @@ export default function MainNav() {
                           <div>
                             <h4 className="mb-1 font-medium">Get started</h4>
                             <p className="text-muted-foreground text-sm">
-                              Their food sources have decreased, and their
-                              numbers
+                              Ready to transform your school management?
                             </p>
                           </div>
-                          <Button variant="secondary">Get started</Button>
+                          <Button variant="secondary" asChild>
+                            <Link href="/sign-in">Get started</Link>
+                          </Button>
                         </div>
                       </div>
                     </div>

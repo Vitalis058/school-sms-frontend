@@ -12,9 +12,7 @@ import {
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import type React from "react";
 import AppSidebar from "./AppSidebar";
-
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
 import { ThemeSwitch } from "@/components/ThemeToggle";
 import {
   BadgeCheck,
@@ -22,17 +20,76 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-  User,
 } from "lucide-react";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-  },
-};
+import { useAuth, usePermissions } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { isAdmin } = usePermissions();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log("Dashboard layout: Auth state check", { 
+      isLoading, 
+      isAuthenticated, 
+      hasUser: !!user,
+      userRole: user?.role 
+    });
+    
+    // Only redirect if we're sure authentication has been checked
+    if (!isLoading && !isAuthenticated) {
+      console.log("Dashboard: Redirecting to sign-in", { isLoading, isAuthenticated, user });
+      router.push("/sign-in");
+    }
+  }, [isAuthenticated, isLoading, router, user]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return null;
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const getUserInitials = (username: string) => {
+    return username
+      .split(" ")
+      .map((name) => name.charAt(0))
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role) {
+      case "ADMIN":
+        return "destructive";
+      case "TEACHER":
+        return "default";
+      case "STUDENT":
+        return "secondary";
+      case "STAFF":
+        return "outline";
+      default:
+        return "secondary";
+    }
+  };
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -45,10 +102,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild name="user">
-                <Avatar className="h-9 w-9 rounded-lg">
-                  {/* <AvatarImage src={"/placeholder.svg"} alt={data.user.name} /> */}
+                <Avatar className="h-9 w-9 rounded-lg cursor-pointer">
                   <AvatarFallback className="rounded-full">
-                    <User />
+                    {getUserInitials(user.username)}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
@@ -61,26 +117,38 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarFallback className="rounded-lg">
+                        {getUserInitials(user.username)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-semibold">
-                        {data.user.name}
+                        {user.username}
                       </span>
                       <span className="truncate text-xs">
-                        {data.user.email}
+                        {user.email}
                       </span>
+                      <Badge 
+                        variant={getRoleBadgeVariant(user.role)} 
+                        className="mt-1 w-fit text-xs"
+                      >
+                        {user.role}
+                      </Badge>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
+                {isAdmin() && (
+                  <>
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Sparkles />
+                        Admin Panel
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
                     <BadgeCheck />
@@ -96,7 +164,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut />
                   Log out
                 </DropdownMenuItem>

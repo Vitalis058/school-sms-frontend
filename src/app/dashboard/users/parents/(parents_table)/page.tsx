@@ -2,11 +2,37 @@
 import DataTable from "@/components/DataTable";
 import ErrorComponent from "@/components/ErrorComponent";
 import LoadingComponent from "@/components/LoadingComponent";
-import { useGetAllParentsQuery } from "@/redux/services";
-import { parent_column } from "./ParentColumn";
+import { useGetParentsQuery } from "@/store/api/parentApi";
+import { ColumnDef } from "@tanstack/react-table";
+import { Guardian } from "@/store/types";
+
+// Define columns directly with proper typing
+const parentColumns: ColumnDef<Guardian>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "phone",
+    header: "Phone Number",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "relationship",
+    header: "Relationship",
+  },
+  {
+    accessorKey: "preferredContactMethod",
+    header: "Contact Method",
+  },
+];
 
 function ParentsData() {
-  const { data: parents, isLoading, isError } = useGetAllParentsQuery();
+  const { data: parentsResponse, isLoading, isError } = useGetParentsQuery({});
+  const parents = parentsResponse?.data || [];
 
   if (isLoading) return <LoadingComponent />;
   if (isError) return <ErrorComponent />;
@@ -16,8 +42,8 @@ function ParentsData() {
       <h2 className="text-xl font-bold">Parents data</h2>
 
       <DataTable
-        columns={parent_column}
-        data={parents || []}
+        columns={parentColumns}
+        data={parents}
         dataName="parents"
         link="/dashboard/users/parents/new"
       />

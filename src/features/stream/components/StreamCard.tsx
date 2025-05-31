@@ -18,7 +18,7 @@ interface ClassCardProps {
   name: string;
 }
 
-export function StreamCard({ teacher, studentCount, name }: ClassCardProps) {
+export function StreamCard({ teacher, studentCount, name, onEdit, onDelete }: ClassCardProps) {
   return (
     <TooltipProvider>
       <Card className="w-full max-w-xs py-0 shadow-sm transition-shadow duration-200 hover:shadow">
@@ -30,11 +30,17 @@ export function StreamCard({ teacher, studentCount, name }: ClassCardProps) {
                 <Ellipsis />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem className="flex items-center gap-2">
+                <DropdownMenuItem 
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={onEdit}
+                >
                   <Edit3 className="text-primary" />
                   <p>Edit</p>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2">
+                <DropdownMenuItem 
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={onDelete}
+                >
                   <Trash2Icon className="text-red-500" />
                   <p>Delete</p>
                 </DropdownMenuItem>
@@ -43,7 +49,7 @@ export function StreamCard({ teacher, studentCount, name }: ClassCardProps) {
           </div>
 
           <p className="text-muted-foreground mb-2 text-sm">
-            Class Teacher: {teacher}
+            Class Teacher: {teacher || "Not assigned"}
           </p>
 
           <div className="text-muted-foreground flex items-center gap-1.5">

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import React from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -20,6 +21,8 @@ import ErrorComponent from "@/components/ErrorComponent";
 import LoadingButton from "@/components/LoadingButton";
 import LoadingComponent from "@/components/LoadingComponent";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { API_URL } from "@/constants/apiUrl";
 import AdditionalInfo from "@/features/teacher/forms/AdditionalInfo";
 import AddressInfo from "@/features/teacher/forms/AddressInfo";
@@ -29,32 +32,84 @@ import PreviousEmployment from "@/features/teacher/forms/PreviousEmployment";
 import ProfessionalInfo from "@/features/teacher/forms/ProfessionalInfo";
 import ReviewInfo from "@/features/teacher/forms/ReviewInfo";
 import {
-  useGetAllDepartmentsQuery,
-  useGetAllSubjectsQuery,
-} from "@/redux/services";
+  useGetDepartmentsQuery,
+  useGetSubjectsQuery,
+} from "@/store/api/academicsApi";
+import {
+  useCreateTeacherMutation,
+} from "@/store/api/teacherApi";
 import {
   TeacherEnrollmentSchema,
   TeacherEnrollmentType,
 } from "@/utils/validation";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { 
+  ChevronLeft, 
+  ChevronRight, 
+  Plus, 
+  Save, 
+  User, 
+  MapPin, 
+  GraduationCap, 
+  Briefcase, 
+  Clock, 
+  FileText, 
+  CheckCircle,
+  AlertCircle,
+  Info
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-// Define the steps of the form
+// Define the steps of the form with icons and descriptions
 const steps = [
-  { id: "personal", title: "Personal Information" },
-  { id: "address", title: "Address & Emergency Contact" },
-  { id: "professional", title: "Professional Information" },
-  { id: "employment", title: "Current Employment" },
-  { id: "previous", title: "Previous Employment" },
-  { id: "additional", title: "Additional Information" },
-  { id: "review", title: "Review & Submit" },
+  { 
+    id: "personal", 
+    title: "Personal Information", 
+    icon: User,
+    description: "Basic personal details and contact information"
+  },
+  { 
+    id: "address", 
+    title: "Address & Emergency Contact", 
+    icon: MapPin,
+    description: "Residential address and emergency contact details"
+  },
+  { 
+    id: "professional", 
+    title: "Professional Information", 
+    icon: GraduationCap,
+    description: "Educational qualifications and teaching expertise"
+  },
+  { 
+    id: "employment", 
+    title: "Current Employment", 
+    icon: Briefcase,
+    description: "Employment type, position, and department details"
+  },
+  { 
+    id: "previous", 
+    title: "Previous Employment", 
+    icon: Clock,
+    description: "Work history and previous teaching experience"
+  },
+  { 
+    id: "additional", 
+    title: "Additional Information", 
+    icon: FileText,
+    description: "Certifications, skills, and additional notes"
+  },
+  { 
+    id: "review", 
+    title: "Review & Submit", 
+    icon: CheckCircle,
+    description: "Review all information before submission"
+  },
 ];
 
 export default function TeacherEnrollmentForm() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
   const router = useRouter();
 
   const form = useForm<TeacherEnrollmentType>({
@@ -84,6 +139,8 @@ export default function TeacherEnrollmentForm() {
         {
           institution: "",
           position: "",
+          startDate: new Date(),
+          endDate: new Date(),
           reasonForLeaving: "",
         },
       ],
@@ -97,6 +154,7 @@ export default function TeacherEnrollmentForm() {
     },
     mode: "onChange",
   });
+
   const {
     append: appendPreviousEmployment,
     fields: PreviousEmploymentFields,
@@ -108,17 +166,44 @@ export default function TeacherEnrollmentForm() {
 
   const nextStep = async () => {
     const fieldsToValidate = getFieldsToValidate(currentStep);
+    setFormErrors([]);
 
     const result = await form.trigger(fieldsToValidate as any);
+    
     if (result) {
+      // Mark current step as completed
+      if (!completedSteps.includes(currentStep)) {
+        setCompletedSteps(prev => [...prev, currentStep]);
+      }
+      
       setCurrentStep((prev) => Math.min(prev + 1, steps.length - 1));
       window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Collect validation errors
+      const errors: string[] = [];
+      fieldsToValidate.forEach(field => {
+        const error = form.formState.errors[field as keyof TeacherEnrollmentType];
+        if (error && typeof error.message === 'string') {
+          errors.push(error.message);
+        }
+      });
+      setFormErrors(errors);
+      toast.error("Please fix the errors before proceeding");
     }
   };
 
   const prevStep = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setFormErrors([]);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const goToStep = (stepIndex: number) => {
+    if (stepIndex <= currentStep || completedSteps.includes(stepIndex - 1)) {
+      setCurrentStep(stepIndex);
+      setFormErrors([]);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   const getFieldsToValidate = (step: number): string[] => {
@@ -152,13 +237,13 @@ export default function TeacherEnrollmentForm() {
           "highestQualification",
           "specialization",
           "teachingExperience",
-          "subjectsCanTeach",
+          "subjects",
           "gradesCanTeach",
         ];
 
       // Current Employment
       case 3:
-        return ["employmentType", "joiningDate", "position", "department"];
+        return ["employmentType", "joiningDate", "position", "departmentId"];
 
       // Previous Employment
       case 4:
@@ -172,37 +257,67 @@ export default function TeacherEnrollmentForm() {
     }
   };
 
-  //mutation function
-  const mutation = useMutation({
-    mutationFn: async (data: TeacherEnrollmentType) => {
-      const response = await axios.post(`${API_URL}/api/v1/teachers`, data);
-      return response;
-    },
-    onSuccess: () => {
-      toast.success("Teacher Enrolled successfully");
-      router.push("/dashboard/users/teachers");
-    },
-    onError: (error) => {
-      toast.error(error.message || "Something went wrong, Please try again");
-    },
-  });
+  // Save draft functionality
+  const saveDraft = () => {
+    const formData = form.getValues();
+    localStorage.setItem('teacherEnrollmentDraft', JSON.stringify(formData));
+    toast.success("Draft saved successfully");
+  };
+
+  // Load draft functionality
+  const loadDraft = () => {
+    const draft = localStorage.getItem('teacherEnrollmentDraft');
+    if (draft) {
+      const draftData = JSON.parse(draft);
+      form.reset(draftData);
+      toast.success("Draft loaded successfully");
+    }
+  };
+
+  // RTK Query mutation for creating teacher
+  const [createTeacher, { isLoading: isCreating }] = useCreateTeacherMutation();
 
   const onSubmit = async (data: TeacherEnrollmentType) => {
-    mutation.mutate(data);
-    console.log(data);
+    try {
+      // Transform the data to match the API expectations
+      const teacherData = {
+        ...data,
+        // Ensure dates are properly formatted as strings
+        dateOfBirth: data.dateOfBirth.toISOString().split('T')[0], // YYYY-MM-DD format
+        joiningDate: data.joiningDate.toISOString().split('T')[0], // YYYY-MM-DD format
+        // Transform previous employments to match expected format
+        previousEmployments: data.previousEmployments.map(emp => ({
+          ...emp,
+          startDate: emp.startDate.toISOString().split('T')[0],
+          endDate: emp.endDate.toISOString().split('T')[0],
+        })),
+      };
+
+      const result = await createTeacher(teacherData).unwrap();
+      
+      // Clear draft on successful submission
+      localStorage.removeItem('teacherEnrollmentDraft');
+      toast.success("Teacher enrolled successfully! Welcome to the team.");
+      router.push("/dashboard/users/teachers");
+    } catch (error: any) {
+      console.error("Teacher creation error:", error);
+      const errorMessage = error?.data?.message || error?.message || "Something went wrong, Please try again";
+      toast.error(errorMessage);
+      setFormErrors([errorMessage]);
+    }
   };
 
   const {
     isError: subjectError,
     isLoading: subjectsLoading,
     data: subjects,
-  } = useGetAllSubjectsQuery();
+  } = useGetSubjectsQuery({});
 
   const {
     isError: departmentError,
     isLoading: departmentLoading,
     data: departments,
-  } = useGetAllDepartmentsQuery();
+  } = useGetDepartmentsQuery();
 
   if (departmentError || subjectError) return <ErrorComponent />;
   if (departmentLoading || subjectsLoading) return <LoadingComponent />;
@@ -213,23 +328,21 @@ export default function TeacherEnrollmentForm() {
         return <PersonalInfo />;
       case 1:
         return <AddressInfo />;
-
       case 2:
         return <ProfessionalInfo subjects={subjects || []} />;
-
       case 3:
         return <CurrentEmploymentDetails departments={departments || []} />;
-
       case 4:
         return (
-          <div>
-            <div className="flex items-center justify-between space-y-4">
-              <h3 className="text-primary text-lg font-semibold">
-                Previous Employment
-              </h3>
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-primary">Previous Employment</h3>
+                <p className="text-sm text-muted-foreground">Add your previous teaching experience</p>
+              </div>
               <Button
                 type="button"
-                variant="default"
+                variant="outline"
                 size="sm"
                 onClick={() =>
                   appendPreviousEmployment({
@@ -240,35 +353,45 @@ export default function TeacherEnrollmentForm() {
                     reasonForLeaving: "",
                   })
                 }
-                className="bg-primary flex items-center gap-1 text-white hover:shadow-md"
+                className="flex items-center gap-2"
               >
                 <Plus className="h-4 w-4" /> Add Employment
               </Button>
             </div>
+            
+            {PreviousEmploymentFields.length === 0 && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  No previous employment added. You can skip this step if this is your first teaching position.
+                </AlertDescription>
+              </Alert>
+            )}
+            
             <FormField
               control={form.control}
               name="previousEmployments"
               render={() => (
                 <FormItem>
-                  {PreviousEmploymentFields.map((field, index) => (
-                    <PreviousEmployment
-                      index={index}
-                      removePreviousEmployment={() =>
-                        removePreviousEmployment(index)
-                      }
-                      key={field.id}
-                    />
-                  ))}
+                  <div className="space-y-4">
+                    {PreviousEmploymentFields.map((field, index) => (
+                      <PreviousEmployment
+                        index={index}
+                        removePreviousEmployment={() =>
+                          removePreviousEmployment(index)
+                        }
+                        key={field.id}
+                      />
+                    ))}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
         );
-
       case 5:
         return <AdditionalInfo />;
-
       case 6:
         return (
           <ReviewInfo
@@ -282,64 +405,199 @@ export default function TeacherEnrollmentForm() {
     }
   };
 
+  const getStepStatus = (stepIndex: number) => {
+    if (completedSteps.includes(stepIndex)) return "completed";
+    if (stepIndex === currentStep) return "current";
+    if (stepIndex < currentStep) return "completed";
+    return "upcoming";
+  };
+
   return (
-    <Card className="border-primary mx-auto mt-5 w-full max-w-4xl">
-      <CardHeader className="border-primary border-b">
-        <CardTitle className="text-2xl font-bold">
-          Teacher Enrollment Form
-        </CardTitle>
-        <CardDescription>
-          Enter teacher details to add them to the school management system
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="mb-8">
-          <div className="mb-2 flex justify-between">
-            <span className="text-sm font-medium">
-              Step {currentStep + 1} of {steps.length}
-            </span>
-            <span className="text-muted-foreground text-sm">
-              {steps[currentStep].title}
-            </span>
-          </div>
-          <Progress
-            value={((currentStep + 1) / steps.length) * 100}
-            className="h-2"
-          />
-        </div>
+    <div className="mx-auto mt-5 w-full max-w-6xl space-y-6">
+      {/* Header */}
+      <Card className="border-primary">
+        <CardHeader className="border-primary border-b">
+          <CardTitle className="text-2xl font-bold flex items-center gap-2">
+            <User className="h-6 w-6" />
+            Teacher Enrollment Form
+          </CardTitle>
+          <CardDescription>
+            Complete all steps to add a new teacher to the school management system
+          </CardDescription>
+        </CardHeader>
+      </Card>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            {renderStepContent()}
-
-            <div className="mt-8 flex justify-between border-t pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 0}
-                className="flex items-center gap-1"
-              >
-                <ChevronLeft className="h-4 w-4" /> Previous
-              </Button>
-
-              {currentStep < steps.length - 1 ? (
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Step Navigation Sidebar */}
+        <div className="lg:col-span-1">
+          <Card className="sticky top-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Progress</CardTitle>
+              <div className="flex items-center gap-2">
+                <Progress
+                  value={((currentStep + 1) / steps.length) * 100}
+                  className="h-2 flex-1"
+                />
+                <span className="text-sm font-medium">
+                  {currentStep + 1}/{steps.length}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {steps.map((step, index) => {
+                const Icon = step.icon;
+                const status = getStepStatus(index);
+                
+                return (
+                  <button
+                    key={step.id}
+                    onClick={() => goToStep(index)}
+                    disabled={index > currentStep && !completedSteps.includes(index - 1)}
+                    className={`w-full text-left p-3 rounded-lg border transition-all ${
+                      status === "current"
+                        ? "border-primary bg-primary/5 text-primary"
+                        : status === "completed"
+                        ? "border-green-200 bg-green-50 text-green-700 hover:bg-green-100"
+                        : "border-gray-200 text-gray-500 hover:bg-gray-50"
+                    } ${
+                      index > currentStep && !completedSteps.includes(index - 1)
+                        ? "opacity-50 cursor-not-allowed"
+                        : "cursor-pointer"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-1 rounded ${
+                        status === "current"
+                          ? "bg-primary text-white"
+                          : status === "completed"
+                          ? "bg-green-500 text-white"
+                          : "bg-gray-200 text-gray-500"
+                      }`}>
+                        {status === "completed" ? (
+                          <CheckCircle className="h-4 w-4" />
+                        ) : (
+                          <Icon className="h-4 w-4" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm truncate">
+                          {step.title}
+                        </div>
+                        <div className="text-xs opacity-75 truncate">
+                          {step.description}
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              
+              {/* Draft Actions */}
+              <div className="pt-4 border-t space-y-2">
                 <Button
                   type="button"
-                  onClick={nextStep}
-                  className="flex items-center gap-1"
+                  variant="outline"
+                  size="sm"
+                  onClick={saveDraft}
+                  className="w-full flex items-center gap-2"
                 >
-                  Next <ChevronRight className="h-4 w-4" />
+                  <Save className="h-4 w-4" />
+                  Save Draft
                 </Button>
-              ) : (
-                <LoadingButton loading={mutation.isPending}>
-                  Submit teachers details
-                </LoadingButton>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={loadDraft}
+                  className="w-full"
+                >
+                  Load Draft
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Main Form Content */}
+        <div className="lg:col-span-3">
+          <Card className="border-primary">
+            <CardHeader className="border-b">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    {React.createElement(steps[currentStep].icon, { className: "h-5 w-5" })}
+                    {steps[currentStep].title}
+                  </CardTitle>
+                  <CardDescription>
+                    {steps[currentStep].description}
+                  </CardDescription>
+                </div>
+                <Badge variant={currentStep === steps.length - 1 ? "default" : "secondary"}>
+                  Step {currentStep + 1}
+                </Badge>
+              </div>
+            </CardHeader>
+            
+            <CardContent className="pt-6">
+              {/* Error Display */}
+              {formErrors.length > 0 && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-1">
+                      <p className="font-medium">Please fix the following errors:</p>
+                      <ul className="list-disc list-inside space-y-1">
+                        {formErrors.map((error, index) => (
+                          <li key={index} className="text-sm">{error}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
               )}
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                  {renderStepContent()}
+
+                  {/* Navigation Buttons */}
+                  <div className="mt-8 flex justify-between items-center border-t pt-6">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={prevStep}
+                      disabled={currentStep === 0}
+                      className="flex items-center gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" /> Previous
+                    </Button>
+
+                    <div className="flex items-center gap-2">
+                      {currentStep < steps.length - 1 ? (
+                        <Button
+                          type="button"
+                          onClick={nextStep}
+                          className="flex items-center gap-2"
+                        >
+                          Next <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <LoadingButton 
+                          loading={isCreating}
+                          className="flex items-center gap-2"
+                        >
+                          <CheckCircle className="h-4 w-4" />
+                          Submit Teacher Details
+                        </LoadingButton>
+                      )}
+                    </div>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }

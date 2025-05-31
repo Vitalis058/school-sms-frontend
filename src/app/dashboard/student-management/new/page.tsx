@@ -10,73 +10,68 @@ import {
 } from "@/components/ui/card";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AddBulkStudentForm from "@/features/student/forms/AddBulkStudentForm";
-import AddSingleStudentForm from "@/features/student/forms/AddSingleStudentForm";
-import { useAppSelector } from "@/redux/hooks";
-import { GradesType, ParentType } from "@/types/types";
+import { StudentForm } from "@/features/students/components/StudentForm";
+import { useGetGradesQuery, useGetStreamsQuery } from "@/store/api/academicsApi";
+import { useGetParentsQuery } from "@/store/api/parentApi";
+import { usePermissions } from "@/contexts/AuthContext";
+import { SidebarInset } from "@/components/ui/sidebar";
+import { useRouter } from "next/navigation";
 
 function NewStudent() {
-  const { grades } = useAppSelector((state) => state.grades);
-  const { parents } = useAppSelector((state) => state.parents);
-  const { streams } = useAppSelector((state) => state.streams);
+  const { isLoading: gradesLoading } = useGetGradesQuery();
+  const { isLoading: parentsLoading } = useGetParentsQuery({});
+  const { isLoading: streamsLoading } = useGetStreamsQuery();
+  const { canCreate } = usePermissions();
+  const router = useRouter();
 
-  const parentsData = parents?.map((item: ParentType) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+  const isLoading = gradesLoading || parentsLoading || streamsLoading;
 
-  const grade = grades?.map((item: GradesType) => {
-    return {
-      label: item.name,
-      value: item.id,
-    };
-  });
+  // Check permissions
+  if (!canCreate("students")) {
+    return (
+      <SidebarInset>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-center">
+            <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+            <p className="text-muted-foreground">
+              You don't have permission to create new students.
+            </p>
+          </div>
+        </div>
+      </SidebarInset>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-lg">Loading...</div>
+            <div className="text-sm text-muted-foreground">Please wait while we load the form data</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const handleSuccess = () => {
+    router.push("/dashboard/student-management");
+  };
 
   return (
-    <div>
-      <Tabs defaultValue="single-registration" className="w-full p-3">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="single-registration">
-            Single Student registration
-          </TabsTrigger>
-          <TabsTrigger value="bulk-registration">
-            Bulk student registration
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="single-registration">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-primary">
-                Single Student Registration
-              </CardTitle>
-              <CardDescription>
-                Enroll a new student here. Click save when you&apos;re done.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <AddSingleStudentForm
-                grades={grade}
-                streams={streams}
-                parents={parentsData}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="bulk-registration">
-          <Card>
-            <CardHeader>
-              <CardTitle>Bulk Student Registration</CardTitle>
-              <CardDescription>Will be implemented soon</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <AddBulkStudentForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+    <SidebarInset>
+      <div className="p-4">
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold tracking-tight">New Student</h2>
+          <p className="text-muted-foreground">
+            Enroll a new student in the school management system.
+          </p>
+        </div>
+        
+        <StudentForm onSuccess={handleSuccess} />
+      </div>
+    </SidebarInset>
   );
 }
 

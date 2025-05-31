@@ -1,7 +1,7 @@
-import { StudentType } from "@/types/types";
+import { Student } from "@/store/types";
 import { createColumnHelper } from "@tanstack/react-table";
 
-const columnHelper = createColumnHelper<StudentType>();
+const columnHelper = createColumnHelper<Student>();
 
 export const studentColumns = [
   columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
@@ -15,7 +15,7 @@ export const studentColumns = [
   }),
   columnHelper.accessor("email", {
     header: "Email",
-    cell: (info) => info.getValue(),
+    cell: (info) => info.getValue() || "N/A",
   }),
   columnHelper.accessor("gender", {
     header: "Gender",

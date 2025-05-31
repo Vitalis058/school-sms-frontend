@@ -1,15 +1,44 @@
-import { AlertTriangle } from "lucide-react";
+import React from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
-function ErrorComponent() {
+interface ErrorComponentProps {
+  message?: string;
+  onRetry?: () => void;
+  showRetry?: boolean;
+}
+
+const ErrorComponent: React.FC<ErrorComponentProps> = ({ 
+  message = "Something went wrong. Please try again.", 
+  onRetry,
+  showRetry = true
+}) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-2 py-6 text-red-500">
-      <AlertTriangle className="h-6 w-6 animate-pulse" />
-      <p className="text-base font-semibold">Something went wrong.</p>
-      <p className="text-muted-foreground text-sm">
-        We couldn’t load the data. Please try again later.
-      </p>
+    <div className="flex items-center justify-center min-h-[200px]">
+      <div className="max-w-md w-full space-y-4">
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {message}
+          </AlertDescription>
+        </Alert>
+        
+        {showRetry && (
+          <div className="flex justify-center">
+            <Button 
+              variant="outline" 
+              onClick={onRetry}
+              className="flex items-center space-x-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>Try Again</span>
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default ErrorComponent;

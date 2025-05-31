@@ -28,10 +28,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  useGetAllSubjectsQuery,
-  useGetAllTeachersQuery,
-  useGetAllTimeSlotsQuery,
-} from "@/redux/services";
+  useGetSubjectsQuery,
+  useGetTimeSlotsQuery,
+} from "@/store/api/academicsApi";
+import { useGetTeachersQuery } from "@/store/api/teacherApi";
 import { StreamsType } from "@/types/types";
 import { Plus } from "lucide-react";
 import LoadingButton from "../../../components/LoadingButton";
@@ -47,9 +47,11 @@ const initialState = {
 };
 
 function Lessons({ stream }: LessonsProps) {
-  const { data: teachers = [] } = useGetAllTeachersQuery();
-  const { data: subjects = [] } = useGetAllSubjectsQuery();
-  const { data: timeSlots = [] } = useGetAllTimeSlotsQuery();
+  const { data: teachersResponse } = useGetTeachersQuery({ page: 1, pageSize: 100 });
+  const { data: subjects = [] } = useGetSubjectsQuery({});
+  const { data: timeSlots = [] } = useGetTimeSlotsQuery();
+  
+  const teachers = teachersResponse?.data || [];
 
   const [state, action, isPending] = useActionState(
     createLessonAction,
